@@ -22,4 +22,22 @@ util.debounce = function(func, wait, immediate) {
   };
 };
 
+utils.isAlphaNumeric = function(event){
+  let input = event.keyCode;
+  if(/[a-zA-Z0-9-_ ]/.test(input)){
+    return true;
+  }
+  return false;
+}
+
+utils.isUpOrDownArrow = function(event){
+  if(event.keyCode == 38 || event.keyCode === 40){
+    return true;
+  }
+  return false;
+}
+
+utils.upArrowKey = 38;
+utils.downArrowKey = 40;
+
 module.exports = util;

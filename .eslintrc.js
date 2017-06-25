@@ -7,7 +7,6 @@ module.exports = {
     browser: true
   },
   extends: ["eslint:recommended"],
-  plugins: ["prettier"],
   rules: {
     curly: "error",
     "no-console": "off",

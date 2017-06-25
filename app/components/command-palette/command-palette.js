@@ -13,23 +13,23 @@ const files = [
   "package.json",
   "webpack.config.js"
 ];
-
 require("./command-palette.scss");
-
-/*Create the commandpalette element*/
 const commandPaletteTemplate = require("./command-palette.html");
 const appElement = document.createElement("div");
 appElement.innerHTML = commandPaletteTemplate;
 document.body.appendChild(appElement);
-console.log("created app element");
 
-const searchInput = document.querySelector(".command-palette__search");
-console.log("called searchINput");
+/************************File Globals**************************/
+const searchInput = document.querySelector(".cPalette__search");
+
+/*Create the commandpalette element*/
 
 function showResults(e) {
-  const resultsList = document.querySelector(
-    ".command-palette__search-results"
-  );
+  if (e.keyCode === 38 || e.keyCode == 40 || e.keyCode == 13) {
+    return;
+  }
+  console.log("keydown", e);
+  const resultsList = document.querySelector(".cPalette__search-results");
   const userInput = searchInput.value;
   //on every key down, render all results: we're onyl showing up to 20, so it may not incur a big cost
   resultsList.innerHTML = "";
@@ -53,7 +53,7 @@ function showResults(e) {
         .join(""); // "package.json"
 
       const resultItem = document.createElement("li");
-      resultItem.classList.add("command-palette__search-result");
+      resultItem.classList.add("cPalette__search-result");
       resultItem.innerHTML += result;
 
       resultsList.appendChild(resultItem);
@@ -65,7 +65,7 @@ function showResults(e) {
 }
 
 //set up event delegation to add selected to li items & remove them when off
-const resultsList = document.querySelector(".command-palette__search-results");
+const resultsList = document.querySelector(".cPalette__search-results");
 resultsList.addEventListener("mouseover", event => {
   console.log(event.target);
   if (event.target.classList.value.includes("search-result")) {
@@ -95,13 +95,13 @@ searchInput.addEventListener("keyup", showResults);
 const toggleButton = document.querySelector(".toggleButton");
 const commandPalette = document.querySelector(".modal");
 const toggleCommandPalette = function() {
-  const isHidden = commandPalette.classList.contains("hide");
+  const isHidden = commandPalette.classList.contains("cPalette_is-inactive");
   if (isHidden) {
     searchInput.value = "";
-    commandPalette.classList.remove("hide");
+    commandPalette.classList.remove("cPalette_is-inactive");
     searchInput.focus();
   } else {
-    commandPalette.classList.add("hide");
+    commandPalette.classList.add("cPalette_is-inactive");
     searchInput.value = "";
   }
 };
@@ -111,24 +111,6 @@ const toggleCommandPalette = function() {
 /**create keylogger**/
 const bodyElement = document.querySelector("body");
 
-// "cmd(91)-shift(16)-(80)"
-const keypresses = [];
-function captureKeyCombo(event) {
-  // console.log("keydown fired!!!!!!!");
-  // if (keypresses.length >= 3) {
-  //   keypresses.forEach((key, i) => {
-  //     if (keypresses[i].keyCode == 91 && keypresses[i + 1].keyCode == 16 && keypresses[i + 2].keyCode == 80) {
-  //       // alert("16,89,91 consequtive!");
-  //       toggleCommandPalette();
-  //       keypresses = [];
-  //     }
-  //   });
-  // }
-  // if(event.which === 80 && event.shiftKey && event.metaKey){
-  //   toggleCommandPalette();
-  // }
-}
-
 /*Doing it on the body isn't wise, what ifç we only have a 10px div on the page? the body would be 10px*/
 
 //hide alfred if the esc key is hit or if our click event is not on alfred.
@@ -136,7 +118,10 @@ function captureKeyCombo(event) {
 const modal = document.querySelector(".modal");
 
 function hideOnEscapeKey(event) {
-  if (event.keyCode === 27 && !commandPalette.classList.contains("hide")) {
+  if (
+    event.keyCode === 27 &&
+    !commandPalette.classList.contains("cPalette_is-inactive")
+  ) {
     toggleCommandPalette();
   }
 }
@@ -149,7 +134,7 @@ function hideOnBlur(event) {
   console.log("clickevent", event);
   if (event.srcElement !== modal && !modal.contains(event.srcElement)) {
     //hide the commandPalette
-    commandPalette.classList.add("hide");
+    commandPalette.classList.add("cPalette_is-inactive");
     resultsList.innerHTML = "";
   }
 }
@@ -157,7 +142,10 @@ const htmlElement = document.querySelector("html");
 htmlElement.addEventListener("click", hideOnBlur);
 
 bodyElement.addEventListener("keydown", event => {
-  if (event.keyCode === 27 && !commandPalette.classList.contains("hide")) {
+  if (
+    event.keyCode === 27 &&
+    !commandPalette.classList.contains("cPalette_is-inactive")
+  ) {
     toggleCommandPalette();
   }
 
@@ -166,3 +154,37 @@ bodyElement.addEventListener("keydown", event => {
   }
 });
 // bodyElement.addEventListener("keyup", captureKeyCombo);
+
+searchInput.addEventListener("keyup", handleInputArrowKeys);
+function handleInputArrowKeys(event) {
+  const resultsList = document.querySelector(".cPalette__search-results");
+  const resultsIsEmpty = resultsList.children.length > 0 ? false : true;
+  if (resultsIsEmpty) {
+    return;
+  }
+  console.log("search results is populated. Arrow Keys work");
+  let highlightedResult = document.querySelector(".cPalette__search-result.selected");
+  if (highlightedResult) {
+    // Arrow Down
+    if (event.keyCode === 40) {
+      const nextSibling = highlightedResult.nextElementSibling;
+      if (nextSibling) {
+        highlightedResult.classList.remove("selected");
+        highlightedResult = nextSibling;
+        highlightedResult.classList.add("selected");
+      }
+    } //Arrow Up
+    else if (event.keyCode === 38) {
+      const nextSibling = highlightedResult.previousElementSibling;
+      if (nextSibling) {
+        highlightedResult.classList.remove("selected");
+        highlightedResult = nextSibling;
+        highlightedResult.classList.add("selected");
+      }
+    }
+    //enter key on the selected result
+    else if (event.keyCode == 13) {
+      console.log('enter on -->', highlightedResult);
+    }
+  }
+}
