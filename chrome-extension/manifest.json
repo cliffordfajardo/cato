@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "Awesome Task Launcher",
+  "description": "A task launcher by Alfred App and text editors such as Atom, VScode & Sublime.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "./index.html",
+    "default_title": "Click here!"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": [
+      "./app.content-script.js"
+    ],
+    "run_at": "document_end"
+  }],
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "./app.background-script.js"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "<all_urls>"
+  ]
+}

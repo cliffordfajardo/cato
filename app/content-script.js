@@ -1,26 +1,46 @@
 const fuzzy = require("fuzzy");
-const options = { pre: "__<", post: ">__" };
-const files = [
-  ".DS_Store",
-  ".editorconfig",
-  ".eslintignore",
-  ".eslintrc.js",
-  ".gitignore",
-  "app.js",
-  "index.html",
-  "npm-debug.log",
-  "package-lock.json",
-  "package.json",
-  "webpack.config.js"
-];
-require("./command-palette.scss");
-const commandPaletteTemplate = require("./command-palette.html");
+const utils = require('./common/utils');
+const options = { pre: "__<", post: ">__", extract: (el) => el.text};
+// const files = [
+//   ".DS_Store",
+//   ".editorconfig",
+//   ".eslintignore",
+//   ".eslintrc.js",
+//   ".gitignore",
+//   "app.js",
+//   "index.html",
+//   "npm-debug.log",
+//   "package-lock.json",
+//   "package.json",
+//   "webpack.config.js"
+// ];
+const files = utils.searchSuggestions;
+
+require("./components/command-palette/command-palette.scss");
+const commandPaletteTemplate = require("./components/command-palette/command-palette.html");
 const appElement = document.createElement("div");
 appElement.innerHTML = commandPaletteTemplate;
 document.body.appendChild(appElement);
 
 /************************File Globals**************************/
 const searchInput = document.querySelector(".cPalette__search");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*Create the commandpalette element*/
 
@@ -40,21 +60,25 @@ function showResults(e) {
 
     const searchResults = fuzzy
       .filter(userInput, files, options)
-      .map(el => el.string); //
+      .map(el => el);
+
+      console.log('searchResults', searchResults)
 
     console.log("searchResults->", searchResults);
     searchResults.forEach(result => {
-      //searchResults looks like: ["package-__<l>____<o>____<c>____<k>__.json", ...]
-      //results looks like: "package-__<l>____<o>____<c>____<k>__.json"
-      //convert it result to: package.json
-      result = result
+      // searchResults looks like: ["package-__<l>____<o>____<c>____<k>__.json", ...]
+      //   //results looks like: "package-__<l>____<o>____<c>____<k>__.json"
+      //   //convert it result to: package.json
+      var textResult = result.string
         .split(/__|<|>/) //["package-", "", "l", "", "", "", "o", "", "", "", "c", "", "", "", "k", "", ".json"]
         .filter(v => v)
         .join(""); // "package.json"
 
       const resultItem = document.createElement("li");
+      resultItem.onclick = result.original.action;
+      resultItem.onclick = result.original.action;
       resultItem.classList.add("cPalette__search-result");
-      resultItem.innerHTML += result;
+      resultItem.innerHTML += textResult;
 
       resultsList.appendChild(resultItem);
     });
@@ -184,7 +208,21 @@ function handleInputArrowKeys(event) {
     }
     //enter key on the selected result
     else if (event.keyCode == 13) {
+      highlightedResult.click();
       console.log('enter on -->', highlightedResult);
     }
   }
 }
+
+
+var createTabbutton = document.querySelector('.toggleButton');
+
+
+/**
+ * code from the content script sending a message to our background script, which does have access to chrome API's
+ * **/
+
+
+  // user selected chrome
+  // chrome.runtime.sendMessage({action: 'openGoogleURL'}); // {action: 'openGoogle.}
+console.log('*************************************')

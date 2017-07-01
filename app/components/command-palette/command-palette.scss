@@ -1,12 +1,14 @@
 .modal {
-  position: relative;
+  position: fixed;
   width: 100%;
   max-width: 35em;
   margin: 0 auto;
   left: initial;
   color: #9da5b4;
   background-color: transparent;
-  top: 35px;
+  top: 30%;
+  left: 44%;
+  z-index: 100001;
 }
 
 
