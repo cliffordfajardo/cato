@@ -6,6 +6,9 @@ module.exports = {
     node: true,
     browser: true
   },
+  "globals": {
+    "chrome": true
+  },
   extends: ["eslint:recommended"],
   rules: {
     curly: "error",
@@ -15,7 +18,6 @@ module.exports = {
     "no-var": "error",
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
-    "prettier/prettier": "error",
-    strict: "error"
+    "strict": "error"
   }
 };

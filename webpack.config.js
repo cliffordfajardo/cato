@@ -52,11 +52,16 @@ var config = {
         run webpack --watch and run webpack-dev-server on a seperate tab,but this
         plugin solves that problem.
         */
-        new WriteFilePlugin(),
+        new WriteFilePlugin({
+          //dont include hot files.
+          test: /^(?!.*(hot)).*/,
+        }),
 
         //This plugin will generate an HTML5 file for you that includes all your webpack bundles in the body using script tags
         new HtmlWebpackPlugin({
-          template: './app/index.html'
+          title: 'My App',
+          template: './app/popup.html',
+          filename: 'popup.html'
           // minify: { collapseWhitespace:true},
           // hash: true
         }),
@@ -80,17 +85,6 @@ var config = {
       }
 };
 
-let contentScriptsConfig = Object.assign({}, {
-  name: 'content-script',
-  entry: './app/content-script.js',
-  output: {
-    path: path.resolve(__dirname, './chrome-extension/'),
-    filename: 'app.content-script.js',
-  },
-  module: config.module,
-  plugins: config.plugins
-});
-
 let backgroundScriptsConfig = Object.assign({}, {
   name: 'background-script',
   entry: './app/background-script.js',
@@ -103,6 +97,5 @@ let backgroundScriptsConfig = Object.assign({}, {
 });
 
 module.exports = [
-  contentScriptsConfig,
   backgroundScriptsConfig
 ]
