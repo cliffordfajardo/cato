@@ -323,7 +323,7 @@ utils.defaultSeachSuggestions = [
     icon: 'images/chrome-logo.png'
   },
   {
-    text: "Close tab",
+    text: "Close Tab",
     action: utils.closeActiveTab,
     icon: 'images/chrome-logo.png'
   },

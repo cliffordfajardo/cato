@@ -1,9 +1,7 @@
 require("./components/command-palette/command-palette.scss");
 require('./popup.scss');
 
-const fuzzy = require("fuzzy");
-const fuzzyOptions = { pre: "__<", post: ">__", extract: (el) => el.text};
-
+const fuzzaldrinPlus = require('fuzzaldrin-plus');
 const utils = require('./common/utils')
 const searchSuggestions = utils.defaultSeachSuggestions;
 
@@ -13,7 +11,6 @@ document.body.appendChild(appElement);
 
 /************************File Globals**************************/
 const searchInput = document.querySelector(".cPalette__search");
-
 
 
 
@@ -32,64 +29,44 @@ function populateSearchSuggestions(){
   });
 }
 populateSearchSuggestions();
-// These things only after basic commander is done..
-//TODO grab print functionality from cjj extension ...pretty cool how it can delete 4 hrs..45
-//TODO define your own search shortcuts...json file wold be nice stylus had that
-//TODO zoom see the crz: https://chrome.google.com/webstore/detail/shortkeys-custom-keyboard/logpjaacgmcbpdkdchjiaagddngobkck...good content script command that's 1 liners..
-//TODO document.body.style.zoom = 1document.body.style.zoom = 1
 
 
-
-
-
-
-
-/*Create the commandpalette element*/
-
-function showResults(e) {
-  if (e.keyCode === 38 || e.keyCode == 40 || e.keyCode == 13) {
-    return;
-  }
-  console.log("keydown", e);
-  const resultsList = document.querySelector(".cPalette__search-results");
-  const userInput = searchInput.value;
-  //on every key down, render all results: we're onyl showing up to 20, so it may not incur a big cost
-  resultsList.innerHTML = "";
+function renderResults(event) {
+  if (event.keyCode === 38 || event.keyCode == 40 || event.keyCode == 13) {return;} //TODO:w/o this ↑ ↓ won't work smoothly. Fix
+  const searchResultsList = document.querySelector(".cPalette__search-results");
+  const userQuery = searchInput.value.trim();
 
   //our focus event will trigger keydown and thus render all of our search results. We don't want that.
-  if (userInput !== "") {
-    console.log("userInput -->", userInput);
+    //on every key down, re-rnder all results.
+    searchResultsList.innerHTML = "";
+    let matchedSearchResults = fuzzaldrinPlus
+      .filter(searchSuggestions,userQuery, options={key: 'text', maxResults: 20})
+      .map((matchedResult) => {
+        matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.text, userQuery);
+        return matchedResult;
+      });
 
-    const searchResults = fuzzy
-      .filter(userInput, searchSuggestions, fuzzyOptions)
-      .map(el => el);
+      // console.log('matchedSearchResults', matchedSearchResults)
+      for(let matchedResult of matchedSearchResults) {
+        const searchResult = document.createElement("li");
+        searchResult.classList.add("cPalette__search-result");
+        searchResult.onclick = matchedResult.action;
+        searchResultsList.appendChild(searchResult);
 
-      console.log('searchResults', searchResults)
 
-    console.log("searchResults->", searchResults);
-    searchResults.forEach(result => {
-      // searchResults looks like: ["package-__<l>____<o>____<c>____<k>__.json", ...]
-      //   //results looks like: "package-__<l>____<o>____<c>____<k>__.json"
-      //   //convert it result to: package.json
-      var textResult = result.string
-        .split(/__|<|>/) //["package-", "", "l", "", "", "", "o", "", "", "", "c", "", "", "", "k", "", ".json"]
-        .filter(v => v)
-        .join(""); // "package.json"
+        const searchResultIcon = document.createElement('img');
+        searchResultIcon.classList.add('cPalette__search-result-icon');
+        searchResultIcon.setAttribute('src', matchedResult.icon);
+        searchResult.appendChild(searchResultIcon);
 
-      const resultItem = document.createElement("li");
-      resultItem.onclick = result.original.action;
-      resultItem.classList.add("cPalette__search-result");
-      resultItem.innerHTML += `
-        <img class="cPalette__search-result-icon"src="${result.original.icon}"/>
-        <span class="cPalette__search-result-text">${textResult}</span>
-      `;
-
-      resultsList.appendChild(resultItem);
-    });
-
+        const searchResultText = document.createElement('div');
+        searchResultText.classList.add('cPalette__search-result-text');
+        searchResultText.innerText = matchedResult.text;
+        searchResultText.innerHTML = matchedResult.textWithMatchedChars;
+        searchResult.appendChild(searchResultText);
+      }
     //apply selected to the first element in list:
     resultsList.children[0].classList.add("selected");
-  }
 }
 
 //set up event delegation to add selected to li items & remove them when off
@@ -99,8 +76,8 @@ resultsList.addEventListener("mouseover", event => {
   if (event.target.classList.value.includes("search-result")) {
     const selectedElement = event.target;
     selectedElement.classList.add("selected");
-    selectedElement.addEventListener("mouseout",event => {selectedElement.classList.remove("selected");},
-      { once: true }
+    selectedElement.addEventListener("mouseout", (/*event*/) => {
+      selectedElement.classList.remove("selected");},{ once: true }
     );
   }
 });
@@ -112,14 +89,9 @@ resultsList.addEventListener("mouseLeave", event => {
   }
 });
 
-//TODO: the top most result should be given a class of 'selected'
 
-searchInput.addEventListener("keyup", showResults);
+searchInput.addEventListener("keyup", renderResults);
 
-
-
-
-const htmlElement = document.querySelector("html");
 
 searchInput.addEventListener("keyup", handleInputArrowKeys);
 function handleInputArrowKeys(event) {
@@ -155,13 +127,4 @@ function handleInputArrowKeys(event) {
     }
   }
 }
-
-
-/**
- * code from the content script sending a message to our background script, which does have access to chrome API's
- * **/
-
-
-  // user selected chrome
-  // chrome.runtime.sendMessage({action: 'openGoogleURL'}); // {action: 'openGoogle.}
 console.log('*************************************')
