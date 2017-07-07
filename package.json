@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fuzzaldrin-plus": "^0.4.1"
+    "fuzzaldrin-plus": "^0.4.1",
+    "math-expression-evaluator": "^1.2.17"
   },
   "devDependencies": {
     "css-loader": "^0.28.4",

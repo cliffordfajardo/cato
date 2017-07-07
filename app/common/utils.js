@@ -1,4 +1,5 @@
 const utils = {};
+const mathexp = require('math-expression-evaluator');
 
 /****************************BROWSWER ACTIONS*****************************
  * The following browser actions can only called from the background script
@@ -234,6 +235,105 @@ utils.switchToTabById = function switchToTabById(windowId, tabId) {
 }
 
 
+
+/**
+ * @description Searches Wikipedia with the query provided by a user in a new tab.
+ * @param  {string} query
+ * @return {void}
+ */
+utils.openWikiSearchInNewTab = function openWikiSearchInNewTab(query){
+  return function() {
+    chrome.tabs.create({url: `http://en.wikipedia.org/wiki/${encodeURI(query)}`});
+  }
+}
+
+
+/**
+ * @description Searches YouTube with the query provided by a user in a new tab.
+ * @param  {string} query
+ * @return {void}
+ */
+utils.openYoutubeSearchInNewTab = function(query) {
+  return function() {
+    chrome.tabs.create({url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`});
+  }
+}
+
+/**
+ * @description Searches google with the query provided by a user in a new tab.
+ * @param  {string} query
+ * @return {void}
+ */
+utils.openGoogleSearchInNewTab = function openGoogleSearchInNewTab(query){
+  return function(){
+    chrome.tabs.create({url: `https://www.google.com/search?q=${encodeURIComponent(query)}`});
+  }
+}
+
+/**TODO
+ * @description Searches gmail with the query provided by a user in a new tab.
+ * @param {string}
+ * @type {void}
+ */
+ utils.openGmailSearchInNewTab = function openGmailSearchInNewTab(query){
+   return function(){
+     chrome.tabs.create({url: `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(query)}`});
+   }
+ }
+
+
+/**TODO
+ * @description Searches google drive with the query provided by a user in a new tab.
+ * @param {string}
+ * @type {void}
+ */
+ utils.openGoogleDriveSearchInNewTab = function openGoogleDriveSearchInNewTab(query){
+   return function(){
+     chrome.tabs.create({url: `https://drive.google.com/drive/u/0/search?q=${encodeURIComponent(query)}`});
+   }
+ }
+
+/**TODO
+ * @description Searches amazon drive with the query provided by a user in a new tab.
+ * @param {string}
+ * @type {void}
+ */
+ utils.openAmazonSearchInNewTab = function openAmazonSearchInNewTab(query){
+   return function(){
+     chrome.tabs.create({url: `https://www.amazon.com/s/?url=search-alias%3Daps&field-keywords=${encodeURIComponent(query)}`});
+   }
+ }
+
+
+/**
+ * @description Determines if the string is a valid math expression.
+ * @param  {string}  userInput
+ * @return {boolean}
+ * @example
+ * utils.isValidMathExpression('1+1' || '500!')  //true
+ * utils.isValidMathExpression('1+' || 'this is some text') //false
+ */
+utils.isValidMathExpression = function isValidMathExpression(userInput){
+  try {
+    mathexp.eval(userInput);
+    return true;
+  } catch(e){
+    return false;
+  }
+}
+
+/**
+ * @description Evaluates a valid math expression.
+ * @param  {string} userQuery
+ * @return {number}
+ * @example
+ * utils.evalMathExpression('1+1') //2
+ */
+utils.evalMathExpression = function evaluateMathExpression(userQuery){
+  return mathexp.eval(userQuery);
+}
+
+
 /*TODO:
 Add commands liek so.. what if we get a 10 matches and the one we want is at position 5..we don't want to requeyr
 'shortcut': {
@@ -245,108 +345,109 @@ utils.defaultSeachSuggestions = [
   {
     text: "Open Bookmarks",
     action: utils.openBookmarksTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open Downloads",
     action: utils.openDownloadsTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open Extensions",
     action: utils.openExtensionsTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open History",
     action: utils.openHistoryTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open Incognito Window",
     action: utils.openIncognitoWindow,
-    icon: 'images/incognito.png'
+    icon: 'images/incognito-icon.png'
   },
   {
     text: "Open New Tab",
     action: utils.openNewTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open New Window",
     action: utils.openNewWindow,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open Settings",
     action: utils.openSettingsTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Open Gmail",
     action: utils.openGmailTab,
-    icon: 'images/gmail.png'
+    icon: 'images/gmail-icon.png'
   },
   {
     text: "Open Google Drive",
     action: utils.openGoogleDriveTab,
-    icon: 'images/google-drive.png'
+    icon: 'images/google-drive-icon.png'
   },
   {
     text: "Open Google Calendar",
     action: utils.openGoogleCalendarTab,
-    icon: 'images/google-calendar.png'
+    icon: 'images/google-calendar-icon.png'
   },
   {
     text: "Reload Current Tab",
     action: utils.reloadActiveTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Copy Current Tab URL",
     action: utils.copyActiveTabUrl,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Duplicate Tab",
     action: utils.duplicateActiveTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Duplicate Tab to Incognito",
     action: utils.cloneTabToIncognitoWindow,
-    icon: 'images/incognito.png'
+    icon: 'images/incognito-icon.png'
   },
   {
     text: "Toggle Fullscreen",
     action: utils.toggleFullscreenForActiveWindow,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Close Tab",
     action: utils.closeActiveTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Mute/Unmute Tab",
     action: utils.toggleMuteActiveTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Mute/Unmute All Tans",
     action: utils.toggleMuteAllTabs,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Close Tabs Except Current",
     action: utils.closeAllButActiveTabInActiveWindow,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   },
   {
     text: "Print Page",
     action: utils.printActiveTab,
-    icon: 'images/chrome-logo.png'
+    icon: 'images/chrome-icon.png'
   }
 
 ];
+
 module.exports = utils;

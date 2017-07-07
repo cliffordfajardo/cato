@@ -5,6 +5,7 @@ const fuzzaldrinPlus = require('fuzzaldrin-plus');
 const utils = require('./common/utils')
 const searchSuggestions = utils.defaultSeachSuggestions;
 
+
 const appElement = document.createElement("div");
 appElement.innerHTML = require("./components/command-palette/command-palette.html");
 document.body.appendChild(appElement);
@@ -33,9 +34,13 @@ populateSearchSuggestions();
 
 function renderResults(event) {
   if (event.keyCode === 38 || event.keyCode == 40 || event.keyCode == 13) {return;} //TODO:w/o this ↑ ↓ won't work smoothly. Fix
+
   const searchResultsList = document.querySelector(".cPalette__search-results");
   const userQuery = searchInput.value.trim();
-
+  if(userQuery === ""){
+    searchResultsList.innerHTML = "";
+    return
+  }
   //our focus event will trigger keydown and thus render all of our search results. We don't want that.
     //on every key down, re-rnder all results.
     searchResultsList.innerHTML = "";
@@ -45,6 +50,60 @@ function renderResults(event) {
         matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.text, userQuery);
         return matchedResult;
       });
+
+    //calculate math expressions regardless (works w00t)..try it with this tab: http://www.101ways.com/
+    //*****Fallback searches if didn't get any matches**//
+    let foundMatches = matchedSearchResults.length > 0;
+    //check if input is a valid math expression
+    let userQueryIsMathExpression = utils.isValidMathExpression(userQuery);
+
+    if(userQueryIsMathExpression){
+      let mathResult = utils.evalMathExpression(userQuery).toString();
+
+      matchedSearchResults.push({
+        'text': userQuery,
+        'action': function(){console.log('it worked');}, //todo: copy to clipboard
+        'icon': 'images/calculator-icon.png',
+        textWithMatchedChars: mathResult //TODO: fix this is hacky
+      });
+    }
+
+    //fallback searches (google)
+    if(!foundMatches ){
+      matchedSearchResults.push(
+        {
+          'action': utils.openGoogleSearchInNewTab(userQuery),
+          icon: 'images/google-search-icon.png',
+          'textWithMatchedChars': `Search Google for: '${userQuery}'`, //todo fix this ugliness
+        },
+        {
+          'action': utils.openWikiSearchInNewTab(userQuery),
+          icon: 'images/wikipedia-icon.png',
+          'textWithMatchedChars': `Search Wikipedia for: '${userQuery}'`, //todo fix this ugliness
+        },
+        {
+          'action': utils.openYoutubeSearchInNewTab(userQuery),
+          icon: 'images/youtube-icon.png',
+          'textWithMatchedChars': `Search YouTube for: '${userQuery}'`, //todo fix this ugliness
+        },
+        {
+          'action': utils.openGoogleDriveSearchInNewTab(userQuery),
+          icon: 'images/google-drive-icon.png',
+          'textWithMatchedChars': `Search Google Drive for: '${userQuery}'`, //todo fix this ugliness
+        },
+        {
+          'action': utils.openAmazonSearchInNewTab(userQuery),
+          icon: 'images/amazon-icon.png',
+          'textWithMatchedChars': `Search Amazon for: '${userQuery}'`, //todo fix this ugliness
+        },
+        {
+          'action': utils.openGmailSearchInNewTab(userQuery),
+          icon: 'images/gmail-icon.png',
+          'textWithMatchedChars': `Search Gmail for: '${userQuery}'`, //todo fix this ugliness
+        }
+      );
+    }
+
 
       // console.log('matchedSearchResults', matchedSearchResults)
       for(let matchedResult of matchedSearchResults) {
@@ -61,13 +120,16 @@ function renderResults(event) {
 
         const searchResultText = document.createElement('div');
         searchResultText.classList.add('cPalette__search-result-text');
-        searchResultText.innerText = matchedResult.text;
         searchResultText.innerHTML = matchedResult.textWithMatchedChars;
         searchResult.appendChild(searchResultText);
       }
     //apply selected to the first element in list:
     resultsList.children[0].classList.add("selected");
 }
+
+
+
+
 
 //set up event delegation to add selected to li items & remove them when off
 const resultsList = document.querySelector(".cPalette__search-results");
