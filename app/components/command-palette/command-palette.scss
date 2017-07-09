@@ -57,21 +57,30 @@
     color: white;
     list-style: none;
 
-    .cPalette__search-result-text{
-      display: inline-block;
-    }
-
     .cPalette__search-result-icon{
       height: 32px;
       width: 32px;
       margin-right: 10px
     }
 
+    .cPalette__search-result-text-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cPalette__search-result-text {
+      font-size: 15px;
+    }
+    .cPalette__search-result-subtext {
+      color: #BD93F9;
+    }
+
+
     //todo: configure fuzzaldrinPlus to use other element with a class instead.
     // .char-match-highlight {
     strong {
       font-weight: bold;
-      color:#4D78CC
+      color:#BD93F9;
     }
   }
 }

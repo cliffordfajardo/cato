@@ -13,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "fuzzaldrin-plus": "^0.4.1",
-    "math-expression-evaluator": "^1.2.17"
+    "math-expression-evaluator": "^1.2.17",
+    "pify": "^3.0.0"
   },
   "devDependencies": {
     "css-loader": "^0.28.4",
