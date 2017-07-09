@@ -1,12 +1,6 @@
 const utils = {};
 const mathexp = require('math-expression-evaluator');
 
-/** **************************BROWSWER ACTIONS*****************************
- * The following browser actions can only called from the background script
- * context. Using these functions in our content scripts, which run in the
- * context of web pages, will break our extension.
- ***********************************************************************/
-
 /**
  * Creates a new tab taking the user to his/her bookmarks.
  * @returns {void}
@@ -14,6 +8,7 @@ const mathexp = require('math-expression-evaluator');
 utils.openBookmarksTab = function openBookmarksTab() {
   chrome.tabs.create({url: "chrome://bookmarks"});
 }
+
 
 /**
  * Creates a new tab taking the user to his/her recent downloads.
@@ -23,6 +18,7 @@ utils.openDownloadsTab = function openDownloadsTab() {
   chrome.tabs.create({url: "chrome://downloads"});
 }
 
+
 /**
  * Creates a new tab taking the user to his/her chrome extensions.
  * @returns {void}
@@ -30,6 +26,7 @@ utils.openDownloadsTab = function openDownloadsTab() {
 utils.openExtensionsTab = function openExtensionsTab() {
   chrome.tabs.create({url: "chrome://extensions"});
 }
+
 
 /**
  * Creates a new teslab taking the user to his/her bookmarks.
@@ -39,6 +36,7 @@ utils.openIncognitoWindow = function openIncognitoWindow() {
   chrome.windows.create({'incognito': true});
 }
 
+
 /**
  * Creates a new blank browser tab.
  * @returns {void}
@@ -47,6 +45,7 @@ utils.openNewTab = function openNewTab() {
   chrome.tabs.create({});
 }
 
+
 /**
  * Creates a new blank browswer window.
  * @returns {void}
@@ -54,6 +53,7 @@ utils.openNewTab = function openNewTab() {
 utils.openNewWindow = function openNewWindow() {
   chrome.windows.create({});
 }
+
 
 /**
  * Creates a new tab taking the user to his/her settings.
@@ -70,14 +70,11 @@ utils.openSettingsTab = function openSettingsTab() {
  */
 utils.closeAllButActiveTabInActiveWindow = function closeAllButActiveTabInActiveWindow() {
   chrome.tabs.query({'active': false, currentWindow: true}, (otherTabs) => {
-      const otherTabIds = [];
-
-      for (const tab of otherTabs) {
-          otherTabIds.push(tab.id);
-      }
+      const otherTabIds = otherTabs.map((tab) => tab.id);
       chrome.tabs.remove(otherTabIds);
   });
 }
+
 
 /**
  * Mutes/unmutes the active tab.
@@ -91,6 +88,7 @@ utils.toggleMuteActiveTab = function toggleMuteActiveTab() {
     chrome.tabs.update({'muted': !isMuted});
   });
 }
+
 
 /**
  * TODO fix..only muting current tab + hitting it again will not unmute it.
@@ -118,6 +116,7 @@ utils.openHistoryTab = function openHistoryTab() {
   chrome.tabs.create({url: "chrome://history"});
 }
 
+
 /**
  * reloads the current tab.
  * @returns {void}
@@ -125,6 +124,7 @@ utils.openHistoryTab = function openHistoryTab() {
 utils.reloadActiveTab = function reloadActiveTab() {
   chrome.tabs.reload();
 }
+
 
 /**
  *  Copies the URL from the current tab & add's it to the user's clipboard.
@@ -145,6 +145,7 @@ utils.copyActiveTabUrl = function copyActiveTabUrl() {
   });
 }
 
+
 /**
  * duplicates the current tab in a new tab.
  * @returns {void}
@@ -156,6 +157,7 @@ utils.duplicateActiveTab = function duplicateActiveTab() {
     chrome.tabs.create({url: activeTabUrl});
   });
 }
+
 
 /**
  * Copies the current tab's URL & creates a new incognito window with the URL of the old tab.
@@ -169,6 +171,7 @@ utils.cloneTabToIncognitoWindow = function cloneTabToIncognitoWindow() {
     chrome.windows.create({incognito: true, url: activeTabUrl});
   });
 }
+
 
 /**
  * Toggles full screen mode for the current tab.
@@ -186,6 +189,7 @@ utils.toggleFullscreenForActiveWindow = function toggleFullscreenForActiveWindow
   });
 }
 
+
 /**
  * brings up the print window for a webpage.
  * @returns {void}
@@ -193,6 +197,7 @@ utils.toggleFullscreenForActiveWindow = function toggleFullscreenForActiveWindow
 utils.printActiveTab = function printActiveTab() {
   chrome.tabs.executeScript(null, {code: `window.print();`});
 }
+
 
 /**
  * Closes the active tab.
@@ -206,6 +211,7 @@ utils.closeActiveTab = function closeActiveTab() {
   });
 }
 
+
 /**
  * Creates a new tab to gmail.
  * @returns {void}
@@ -213,6 +219,7 @@ utils.closeActiveTab = function closeActiveTab() {
 utils.openGmailTab = function openGmailTab() {
   chrome.tabs.create({url: "https://mail.google.com"});
 }
+
 
 /**
  * Creates a new tab to gmail.
@@ -222,6 +229,7 @@ utils.openGoogleDriveTab = function openGoogleDriveTab() {
   chrome.tabs.create({url: "https://drive.google.com"});
 }
 
+
 /**
  * Creates a new tab to google calendar.
  * @returns {void}
@@ -230,10 +238,11 @@ utils.openGoogleCalendarTab = function openGoogleCalendarTab() {
   chrome.tabs.create({url: "https://calendar.google.com"});
 }
 
+
 /**
  * Given a windowId & tabId, changes a user's current tab to another tab (in same window or out).
- * @param  {string} windowId [description]
- * @param  {number} tabId    [description]
+ * @param  {string} windowId
+ * @param  {number} tabId
  * @returns {void}
  */
 utils.switchToTabById = function switchToTabById(windowId, tabId) {
@@ -270,6 +279,7 @@ utils.openYoutubeSearchInNewTab = function openYoutubeSearchInNewTab(query) {
   }
 }
 
+
 /**
  * Searches google with the query provided by a user in a new tab.
  * @param  {string} query
@@ -280,6 +290,7 @@ utils.openGoogleSearchInNewTab = function openGoogleSearchInNewTab(query) {
     chrome.tabs.create({url: `https://www.google.com/search?q=${encodeURIComponent(query)}`});
   }
 }
+
 
 /**
  * Searches gmail with the query provided by a user in a new tab.
@@ -303,6 +314,7 @@ utils.openGoogleSearchInNewTab = function openGoogleSearchInNewTab(query) {
      chrome.tabs.create({url: `https://drive.google.com/drive/u/0/search?q=${encodeURIComponent(query)}`});
    }
  }
+
 
 /**
  * Searches amazon drive with the query provided by a user in a new tab.
@@ -333,6 +345,24 @@ utils.isValidMathExpression = function isValidMathExpression(userInput) {
   }
 }
 
+
+/**
+ * A function that defines the sort order.
+ * @param  {any} extension1
+ * @param  {any} extension2
+ * @returns {array}
+ */
+utils.sortByName = function sortByName(extension1, extension2){
+  if(extension1.name < extension2.name) {
+    return -1
+  }
+  if(extension1.name > extension2.name){
+    return 1;
+  }
+  return 0;
+}
+
+
 /**
  * Evaluates a valid math expression.
  * @param  {string} userQuery
@@ -344,22 +374,6 @@ utils.evalMathExpression = function evalMathExpression(userQuery) {
   return mathexp.eval(userQuery);
 }
 
-/**
- * disables all extensions except this one.
- * @returns {void} [description]
- */
-utils.disableAllExtensions = function disableAllExtensions() {
-  chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
-      .filter((extensionOrApp) => extensionOrApp.type === 'extension' && extensionOrApp.name !== "Awesome Task Launcher");
-
-    for(const extension of extensions) {
-      chrome.management.setEnabled(extension.id, false, () => {
-        // console.log('disabled the extension ' + extension.name);
-      })
-    }
-  })
-}
 
 /**
  * disables all extensions except this one.
@@ -368,24 +382,31 @@ utils.disableAllExtensions = function disableAllExtensions() {
 utils.disableAllExtensions = function disableAllExtensions() {
   chrome.management.getAll((extensionsAndApps) => {
     const extensions = extensionsAndApps
-      .filter((extensionOrApp) => extensionOrApp.type === 'extension' && extensionOrApp.name !== "Awesome Task Launcher");
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+               extensionOrApp.name !== "Awesome Task Launcher";
+      })
 
-    for(const extension of extensions) {
+    extensions.forEach((extension) => {
       chrome.management.setEnabled(extension.id, false)
-    }
-  })
+    })
+  });
 }
 
 utils.getAllChromeExtensions = function getAllChromeExtensions() {
   chrome.management.getAll((extensionsAndApps) => {
     const extensions = extensionsAndApps
-      .filter((extensionOrApp) => extensionOrApp.type === 'extension' && extensionOrApp.name !== "Awesome Task Launcher");
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+               extensionOrApp.name !== "Awesome Task Launcher";
+      });
 
-    for(const extension of extensions) {
+    extensions.forEach((extension) => {
       chrome.management.setEnabled(extension.id, false)
-    }
+    });
   })
 }
+
 
 /**
  * toggles a chrome extension on/off.
@@ -401,6 +422,7 @@ utils.toggleExtensionOnOff = function toggleExtensionOnOff(extension) {
   }
 }
 
+
 /**
  * toggles a chrome extension on/off.
  * @param  {Object} extension
@@ -413,6 +435,7 @@ utils.uninstallExtension = function uninstallExtension(extension) {
     chrome.management.uninstall(extension.id, options);
   }
 }
+
 
 /**
  * checks if an extension object has an icon. If it does, we check
@@ -435,6 +458,7 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
 //   // chrome.bookmarks.removeTree(bookmark.id)
 // }
 
+
 /**
  * Go forward in the current tab's history.
  * @returns {void}
@@ -442,6 +466,7 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
 utils.goBackAPage = function goBackAPage() {
   chrome.tabs.executeScript(null, {code: `window.history.back()`})
 }
+
 
 /**
  * Go forward in the current tab's history.
@@ -451,6 +476,174 @@ utils.goForwardAPage = function goForwardAPage() {
   chrome.tabs.executeScript(null, {code: `window.history.forward()`})
 }
 
+
+/**
+ * Displays all extensions the user has installed and provides the option to uninstall the extension.
+ * @returns {void}
+ */
+utils.displayAllExtensions = function displayAllExtensions() {
+  window.searchInput.value = ''
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Uninstall an extension');
+
+  chrome.management.getAll((extensionsAndApps) => {
+    let extensions = extensionsAndApps
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+          extensionOrApp.name !== "Awesome Task Launcher"
+      })
+      .sort(utils.sortByName);
+
+      window.currentSearchSuggestions = extensions.map((extension) => {
+        const action = {
+          'keyword': `${extension.name}`,
+          'action': utils.uninstallExtension(extension),
+          'icon': utils.useAvalableExtensionIcon(extension)
+        };
+        return action;
+      });
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+  });
+}
+
+
+/**
+ * Displays all extensions the user has installed and provides the option to uninstall the extension.
+ * @returns {void}
+ */
+utils.displayAllExtensions = function displayAllExtensions() {
+  window.searchInput.value = ''
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Uninstall an extension');
+
+  chrome.management.getAll((extensionsAndApps) => {
+    const extensions = extensionsAndApps
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+          extensionOrApp.name !== "Awesome Task Launcher"
+      })
+      .sort(utils.sortByName);
+
+      window.currentSearchSuggestions = extensions.map((extension) => {
+        const action = {
+          'keyword': `${extension.name}`,
+          'action': utils.uninstallExtension(extension),
+          'icon': utils.useAvalableExtensionIcon(extension)
+        };
+        return action;
+      });
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+  });
+}
+
+
+/**
+ * Displays all extensions the user has installed and provides the option to uninstall the extension.
+ * @returns {void}
+ */
+utils.displayActiveExtensions = function displayActiveExtensions() {
+  window.searchInput.value = ''
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Disable an extension');
+
+  chrome.management.getAll((extensionsAndApps) => {
+    const extensions = extensionsAndApps
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+          extensionOrApp.name !== "Awesome Task Launcher" &&
+          extensionOrApp.enabled;
+      })
+      .sort(utils.sortByName);
+
+      window.currentSearchSuggestions = extensions.map((extension) => {
+        const action = {
+          keyword: `${extension.name}`,
+          action: () => chrome.management.setEnabled(extension.id, false),
+          icon: utils.useAvalableExtensionIcon(extension)
+        };
+        return action;
+      });P
+      //display a message nothing found
+      if(window.currentSearchSuggestions.length === 0){
+        const noInactiveExtensionMessage = {
+          keyword: 'No Inactive Extensions Found',
+          icon: 'images/chrome-icon.png'
+        }
+        window.currentSearchSuggestions.push(noInactiveExtensionMessage);
+        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+      } else {
+        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+      }
+  });
+}
+
+
+/**
+ * Displays all extensions the user has installed and provides the option to uninstall the extension.
+ * @returns {void}
+ */
+utils.displayInactiveExtensions = function displayInactiveExtensions() {
+  window.searchInput.value = '';
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Enable an extension');
+
+  chrome.management.getAll((extensionsAndApps) => {
+    const extensions = extensionsAndApps
+      .filter((extensionOrApp) => {
+        return extensionOrApp.type === 'extension' &&
+          extensionOrApp.name !== "Awesome Task Launcher" &&
+          !extensionOrApp.enabled;
+      })
+      .sort(utils.sortByName);
+
+      window.currentSearchSuggestions = extensions.map((extension) => {
+        const suggestion = {
+          keyword: `${extension.name}`,
+          action: () => chrome.management.setEnabled(extension.id, true),
+          icon: utils.useAvalableExtensionIcon(extension)
+        };
+        return suggestion;
+      });
+
+      //display a message nothing found
+      if(window.currentSearchSuggestions.length === 0){
+        const noInactiveExtensionMessage = {
+          keyword: 'No Inactive Extensions Found',
+          icon: 'images/chrome-icon.png'
+        }
+        window.currentSearchSuggestions.push(noInactiveExtensionMessage);
+        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+      } else {
+        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+      }
+  });
+}
+
+
+/**
+ * Display all open tabs across all windows to the user. Selecting a tab will move the user to that tab.
+ * @returns {void}
+ */
+utils.displayOpenTabs = function displayOpenTabs() {
+  window.searchInput.value = '';
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Search for a Tab');
+  window.currentSearchSuggestions = [];
+
+  chrome.windows.getAll({populate: true}, (browserWindows) => {
+    browserWindows.forEach((browserWindow) => {
+      browserWindow.tabs.forEach((tab) => {
+        const suggestion = {
+          'action': utils.switchToTabById(tab.windowId, tab.id),
+          'icon': tab.favIconUrl || 'images/blank-page.png',
+          'keyword': `${tab.title}`
+        };
+        window.currentSearchSuggestions.push(suggestion);
+      })
+    });
+    window.renderMatchedSearchResults(window.currentSearchSuggestions.sort(utils.sortByName));
+  });
+}
 
 utils.togglePlayVideo = function togglePlayVideo() {
   chrome.tabs.executeScript(null, {
@@ -520,6 +713,8 @@ Add commands liek so.. what if we get a 10 matches and the one we want is at pos
         'mac': ['⌘', '1...9']
     }
 */
+
+
 utils.defaultSeachSuggestions = [
   {
     keyword: "Open Bookmarks",
@@ -566,21 +761,21 @@ utils.defaultSeachSuggestions = [
     action: utils.openSettingsTab,
     icon: 'images/chrome-icon.png'
   },
-  // {
-  //   keyword: "Gmail",
-  //   action: utils.openGmailTab,
-  //   icon: 'images/gmail-icon.png'
-  // },
-  // {
-  //   keyword: "Drive",
-  //   action: utils.openGoogleDriveTab,
-  //   icon: 'images/google-drive-icon.png'
-  // },
-  // {
-  //   keyword: "Open Google Calendar",
-  //   action: utils.openGoogleCalendarTab,
-  //   icon: 'images/google-calendar-icon.png'
-  // },
+  {
+    keyword: "Gmail",
+    action: utils.openGmailTab,
+    icon: 'images/gmail-icon.png'
+  },
+  {
+    keyword: "Drive",
+    action: utils.openGoogleDriveTab,
+    icon: 'images/google-drive-icon.png'
+  },
+  {
+    keyword: "Open Google Calendar",
+    action: utils.openGoogleCalendarTab,
+    icon: 'images/google-calendar-icon.png'
+  },
   {
     keyword: "Reload Current Tab",
     action: utils.reloadActiveTab,
@@ -668,8 +863,27 @@ utils.defaultSeachSuggestions = [
     keyword: "Speed: 2x",
     action: utils.changePlayRate2,
     icon: 'images/youtube-icon.png'
+  },
+  {
+    keyword: 'Uninstall an Extension',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayAllExtensions
+  },
+  {
+    keyword: 'Disable an Extension',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayActiveExtensions
+  },
+  {
+    keyword: 'Enable an Extension',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayInactiveExtensions
+  },
+  {
+    keyword: 'Change Tab',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayOpenTabs
   }
-
 ];
 
 module.exports = utils;

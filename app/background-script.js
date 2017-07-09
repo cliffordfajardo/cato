@@ -1,104 +1,89 @@
 require("./components/command-palette/command-palette.scss");
 require('./popup.scss');
 
+
 const fuzzaldrinPlus = require('fuzzaldrin-plus');
-const utils = require('./common/utils')
-const searchSuggestions = utils.defaultSeachSuggestions;
+const utils = require('./common/utils');
+const appHTML = require("./components/command-palette/command-palette.html");
+
+/* ***********************Bootstrap app markup & set up globals**************************/
+window.appElement = document.createElement("div");
+window.appElement.innerHTML = appHTML;
+document.body.appendChild(window.appElement);
+
+window.currentSearchSuggestions = utils.defaultSeachSuggestions;
+window.searchInput = document.querySelector(".cPalette__search");
+window.searchResultsList = document.querySelector(".cPalette__search-results");
+
+//Focus the input to prompt user for an action.
+window.searchInput.focus()
 
 
-const appElement = document.createElement("div");
-
-appElement.innerHTML = require("./components/command-palette/command-palette.html");
-document.body.appendChild(appElement);
-
-/** **********************File Globals**************************/
-const searchInput = document.querySelector(".cPalette__search");
 
 
 /**
- * Populates the default search suggestions that a user can search through.
+ * Creates & appends the matched search result to the results list.
+ * @param  {array} matchedSearchResults
  * @returns {void}
  */
-function populateSearchSuggestions() {
-  // improve search filtering by including domain.
-  // get all tabs & add them to our suggestion list via thier title
-  chrome.windows.getAll({populate: true}, (browserWindows) => {
-    browserWindows.forEach((browserWindow) => {
-      browserWindow.tabs.forEach((tab) => {
-        searchSuggestions.push({
-          'action': utils.switchToTabById(tab.windowId, tab.id),
-          'icon': tab.favIconUrl || 'images/blank-page.png',
-          'keyword': `Change tab: ${tab.title}`
-        });
-      });
-    });
-  });
+window.renderMatchedSearchResults = function renderMatchedSearchResults(matchedSearchResults) {
+  for(const matchedResult of matchedSearchResults) {
+    const searchResult = document.createElement("li");
 
-  // get all chrome extensions & add them to our list for enabling or disabling
-  chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
-      .filter((extensionOrApp) => extensionOrApp.type === 'extension' && extensionOrApp.name !== "Awesome Task Launcher");
+    searchResult.classList.add("cPalette__search-result");
+    searchResult.onclick = matchedResult.action;
+    window.searchResultsList.appendChild(searchResult);
 
-    for(const extension of extensions) {
-      const extensionStatus = extension.enabled ? 'Enabled' : 'Disabled';
-      const extensionOption = extensionStatus === 'Enabled' ? 'Disable' : 'Enable';
 
-      searchSuggestions.push({
-        'keyword': `${extensionOption} Extension: ${extension.name}`,
-        'action': utils.toggleExtensionOnOff(extension),
-        'icon': utils.useAvalableExtensionIcon(extension)
-      });
+    const searchResultIcon = document.createElement('img');
+
+    searchResultIcon.classList.add('cPalette__search-result-icon');
+    searchResultIcon.setAttribute('src', matchedResult.icon);
+    searchResult.appendChild(searchResultIcon);
+
+    const searchResultTextInfo = document.createElement('div');
+
+    searchResultTextInfo.classList.add('cPalette__search-result-text-info');
+    searchResult.appendChild(searchResultTextInfo);
+
+    const resultText = document.createElement('div');
+
+    resultText.classList.add('cPalette__search-result-text');
+    resultText.innerHTML = matchedResult.textWithMatchedChars || matchedResult.keyword;
+    searchResultTextInfo.appendChild(resultText);
+
+
+    const resultSubtext = document.createElement('div');
+
+    resultSubtext.classList.add('cPalette__search-result-subtext');
+    resultSubtext.innerHTML = matchedResult.subtext;
+    if(matchedResult.subtext) {
+      searchResultTextInfo.appendChild(resultSubtext);
     }
-  });
-
-  // uninstall option extensions
-  chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
-      .filter((extensionOrApp) => extensionOrApp.type === 'extension' && extensionOrApp.name !== "Awesome Task Launcher");
-
-    for(const extension of extensions) {
-      const action = {
-        'action': utils.uninstallExtension(extension),
-        'icon': utils.useAvalableExtensionIcon(extension),
-        'keyword': `Uninstall Extension: ${extension.name}`
-      }
-
-      searchSuggestions.push(action);
-    }
-  });
-
+  }
+  window.searchResultsList.children[0].classList.add("selected");
 }
-populateSearchSuggestions();
 
 
-/**
- * Rerenders the search results on every keydown in our search input.
- * @param  {event} event
- * @returns {void}
- */
-function renderResults(event) {
-  // This will require fixing at some point, but w/o this our up-down in our input will not work
+window.searchInput.addEventListener("keyup", (event) => {
   if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 13) {
     return;
   }
-
-  const searchResultsList = document.querySelector(".cPalette__search-results");
-  const userQuery = searchInput.value.trim();
+  const userQuery = window.searchInput.value.trim();
 
   if(userQuery === "") {
-    searchResultsList.innerHTML = "";
+    window.searchResultsList.innerHTML = "";
     return
   }
   // our focus event will trigger keydown and thus render all of our search results. We don't want that.
-    // on every key down, re-rnder all results.
-    searchResultsList.innerHTML = "";
-    const matchedSearchResults = fuzzaldrinPlus
-      .filter(searchSuggestions, userQuery, {key: 'keyword', maxResults: 20})
-      .map((matchedResult) => {
-        matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, userQuery);
-        return matchedResult;
-      });
-
+  // on every key down, re-rnder all results.
+  window.searchResultsList.innerHTML = "";
+  const matchedSearchResults = fuzzaldrinPlus
+    .filter(window.currentSearchSuggestions, userQuery, {key: 'keyword', maxResults: 20})
+    .map((matchedResult) => {
+      matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, userQuery);
+      return matchedResult;
+    });
     // calculate math expressions regardless (works w00t)..try it with this tab: http://www.101ways.com/
     //* ****Fallback searches if didn't get any matches**//
     const foundMatches = matchedSearchResults.length > 0;
@@ -128,84 +113,44 @@ function renderResults(event) {
           // fix this ugliness
           'textWithMatchedChars': `Search Google for: '${userQuery}'`
         },
-        // {
-        //   'action': utils.openWikiSearchInNewTab(userQuery),
-        //   icon: 'images/wikipedia-icon.png',
-        //   // fix this ugliness
-        //   'textWithMatchedChars': `Search Wikipedia for: '${userQuery}'`
-        // },
+        {
+          'action': utils.openWikiSearchInNewTab(userQuery),
+          icon: 'images/wikipedia-icon.png',
+          // fix this ugliness
+          'textWithMatchedChars': `Search Wikipedia for: '${userQuery}'`
+        },
         {
           'action': utils.openYoutubeSearchInNewTab(userQuery),
           icon: 'images/youtube-icon.png',
           // fix this ugliness
           'textWithMatchedChars': `Search YouTube for: '${userQuery}'`
         },
-        // {
-        //   'action': utils.openGoogleDriveSearchInNewTab(userQuery),
-        //   icon: 'images/google-drive-icon.png',
-        //   // fix this ugliness
-        //   'textWithMatchedChars': `Search Google Drive for: '${userQuery}'`
-        // },
+        {
+          'action': utils.openGoogleDriveSearchInNewTab(userQuery),
+          icon: 'images/google-drive-icon.png',
+          // fix this ugliness
+          'textWithMatchedChars': `Search Google Drive for: '${userQuery}'`
+        },
         {
           'action': utils.openAmazonSearchInNewTab(userQuery),
           icon: 'images/amazon-icon.png',
           // fix this ugliness
           'textWithMatchedChars': `Search Amazon for: '${userQuery}'`
+        },
+        {
+          'action': utils.openGmailSearchInNewTab(userQuery),
+          icon: 'images/gmail-icon.png',
+          // fix this ugliness
+          'textWithMatchedChars': `Search Gmail for: '${userQuery}'`
         }
-        // {
-        //   'action': utils.openGmailSearchInNewTab(userQuery),
-        //   icon: 'images/gmail-icon.png',
-        //   // fix this ugliness
-        //   'textWithMatchedChars': `Search Gmail for: '${userQuery}'`
-        // }
       );
     }
 
-
-      // console.log('matchedSearchResults', matchedSearchResults)
-      for(const matchedResult of matchedSearchResults) {
-        const searchResult = document.createElement("li");
-
-        searchResult.classList.add("cPalette__search-result");
-        searchResult.onclick = matchedResult.action;
-        searchResultsList.appendChild(searchResult);
+  window.renderMatchedSearchResults(matchedSearchResults);
+});
 
 
-        const searchResultIcon = document.createElement('img');
-
-        searchResultIcon.classList.add('cPalette__search-result-icon');
-        searchResultIcon.setAttribute('src', matchedResult.icon);
-        searchResult.appendChild(searchResultIcon);
-
-        const searchResultTextInfo = document.createElement('div');
-
-        searchResultTextInfo.classList.add('cPalette__search-result-text-info');
-        searchResult.appendChild(searchResultTextInfo);
-
-        const resultText = document.createElement('div');
-
-        resultText.classList.add('cPalette__search-result-text');
-        resultText.innerHTML = matchedResult.textWithMatchedChars;
-        searchResultTextInfo.appendChild(resultText);
-
-
-        const resultSubtext = document.createElement('div');
-
-        resultSubtext.classList.add('cPalette__search-result-subtext');
-        resultSubtext.innerHTML = matchedResult.subtext;
-        if(matchedResult.subtext) {
-          searchResultTextInfo.appendChild(resultSubtext);
-        }
-      }
-    // apply selected to the first element in list:
-    resultsList.children[0].classList.add("selected");
-}
-
-
-// set up event delegation to add selected to li items & remove them when off
-const resultsList = document.querySelector(".cPalette__search-results");
-
-resultsList.addEventListener("mouseover", (event) => {
+window.searchResultsList.addEventListener("mouseover", (event) => {
   // console.log(event.target);
   if (event.target.classList.value.includes("search-result")) {
     const selectedElement = event.target;
@@ -218,16 +163,12 @@ resultsList.addEventListener("mouseover", (event) => {
   }
 });
 
-resultsList.addEventListener("mouseLeave", (event) => {
+window.searchResultsList.addEventListener("mouseLeave", (event) => {
   // console.log(event.target);
   if (event.target.classList.value.includes("search-result")) {
     event.target.classList.remove("selected");
   }
 });
-
-
-searchInput.addEventListener("keyup", renderResults);
-
 
 /**
  * Handles up and down keys when the user has focus on the input field, enabling the user
@@ -272,5 +213,4 @@ function handleInputArrowKeys(event) {
   }
 }
 
-searchInput.addEventListener("keyup", handleInputArrowKeys);
-// console.log('*************************************')
+window.searchInput.addEventListener("keyup", handleInputArrowKeys);

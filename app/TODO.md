@@ -75,7 +75,6 @@ Utility clean up browser like new:
 //sort tabs by website (tabs.move....or look at commander)
 
 
-//TODO: find cleaner method for printing
 https://developer.chrome.com/extensions/webNavigation#event-onBeforeNavigate
 
 
