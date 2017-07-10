@@ -183,7 +183,8 @@ utils.toggleFullscreenForActiveWindow = function toggleFullscreenForActiveWindow
 
     if (isFullScreen) {
       chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, {state: "normal"});
-    } else {
+    }
+    else {
       chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, {state: "fullscreen"});
     }
   });
@@ -333,15 +334,34 @@ utils.openGoogleSearchInNewTab = function openGoogleSearchInNewTab(query) {
  * @param  {string}  userInput
  * @returns {boolean}
  * @example
- * utils.isValidMathExpression('1+1' || '500!')  //true
- * utils.isValidMathExpression('1+' || 'this is some text') //false
+ * utils.isValidMathExpression('1+1')  //true
  */
 utils.isValidMathExpression = function isValidMathExpression(userInput) {
   try {
     mathexp.eval(userInput);
     return true;
-  } catch(exception) {
+  }
+  catch(exception) {
     return false;
+  }
+}
+
+/**
+ * Determines if the string is an incomplete math expression
+ * @param  {string}  userInput
+ * @returns {boolean}
+ * @example
+ * utils.isIncompleteMathExpression('1+')  //true
+ */
+utils.isIncompleteMathExpression = function isIncompleteMathExpression(userInput) {
+  try {
+    mathexp.eval(userInput);
+    return false;
+  }
+  catch(exception) {
+    if(exception.message === "complete the expression" && userInput !== '') {
+      return true;
+    }
   }
 }
 
@@ -352,11 +372,11 @@ utils.isValidMathExpression = function isValidMathExpression(userInput) {
  * @param  {any} extension2
  * @returns {array}
  */
-utils.sortByName = function sortByName(extension1, extension2){
+utils.sortByName = function sortByName(extension1, extension2) {
   if(extension1.name < extension2.name) {
     return -1
   }
-  if(extension1.name > extension2.name){
+  if(extension1.name > extension2.name) {
     return 1;
   }
   return 0;
@@ -538,7 +558,7 @@ utils.displayAllExtensions = function displayAllExtensions() {
 
 
 /**
- * Displays all extensions the user has installed and provides the option to uninstall the extension.
+ * Displays all enabled extensions the user has installed and provides the option to disable an extension.
  * @returns {void}
  */
 utils.displayActiveExtensions = function displayActiveExtensions() {
@@ -562,16 +582,17 @@ utils.displayActiveExtensions = function displayActiveExtensions() {
           icon: utils.useAvalableExtensionIcon(extension)
         };
         return action;
-      });P
-      //display a message nothing found
-      if(window.currentSearchSuggestions.length === 0){
+      });
+      // display a message nothing found
+      if(window.currentSearchSuggestions.length === 0) {
         const noInactiveExtensionMessage = {
-          keyword: 'No Inactive Extensions Found',
+          keyword: 'No Active Extensions Found',
           icon: 'images/chrome-icon.png'
         }
         window.currentSearchSuggestions.push(noInactiveExtensionMessage);
         window.renderMatchedSearchResults(window.currentSearchSuggestions);
-      } else {
+      }
+      else {
         window.renderMatchedSearchResults(window.currentSearchSuggestions);
       }
   });
@@ -605,15 +626,16 @@ utils.displayInactiveExtensions = function displayInactiveExtensions() {
         return suggestion;
       });
 
-      //display a message nothing found
-      if(window.currentSearchSuggestions.length === 0){
+      // display a message nothing found
+      if(window.currentSearchSuggestions.length === 0) {
         const noInactiveExtensionMessage = {
-          keyword: 'No Inactive Extensions Found',
+          keyword: 'No Disabled Extensions Found',
           icon: 'images/chrome-icon.png'
         }
         window.currentSearchSuggestions.push(noInactiveExtensionMessage);
         window.renderMatchedSearchResults(window.currentSearchSuggestions);
-      } else {
+      }
+      else {
         window.renderMatchedSearchResults(window.currentSearchSuggestions);
       }
   });
@@ -643,6 +665,28 @@ utils.displayOpenTabs = function displayOpenTabs() {
     });
     window.renderMatchedSearchResults(window.currentSearchSuggestions.sort(utils.sortByName));
   });
+}
+
+/**
+ * Displays the result of a valid math expression.
+ * @param  {string} value
+ * @returns {object}
+ */
+utils.displayValidMathResult = function displayValidMathResult(value) {
+  return {
+    'subtext': 'Copy this number to your clipboard.',
+    'icon': 'images/calculator-icon.png', // need to fix this is hacky
+    textWithMatchedChars: value
+  }
+}
+
+/**
+ * Display this message if the user input is a partially complete math expression.
+ */
+utils.displayIncompleteMathError = {
+  'subtext': 'Please enter a valid expression',
+  'icon': 'images/calculator-icon.png', // need to fix this is hacky
+  textWithMatchedChars: '...'
 }
 
 utils.togglePlayVideo = function togglePlayVideo() {
@@ -883,6 +927,51 @@ utils.defaultSeachSuggestions = [
     keyword: 'Change Tab',
     icon: 'images/chrome-icon.png',
     action: utils.displayOpenTabs
+  }
+];
+
+utils.fallbackWebSearches = [
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search Google for: '${window.searchInput.value}'`,
+      action: utils.openGoogleSearchInNewTab(window.searchInput.value),
+      icon: 'images/google-search-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search Wikipedia for: '${window.searchInput.value}'`,
+      action: utils.openWikiSearchInNewTab(window.searchInput.value),
+      icon: 'images/wikipedia-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search YouTube for: '${window.searchInput.value}'`,
+      action: utils.openYoutubeSearchInNewTab(window.searchInput.value),
+      icon: 'images/youtube-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search Google Drive for: '${window.searchInput.value}'`,
+      action: utils.openGoogleDriveSearchInNewTab(window.searchInput.value),
+      icon: 'images/google-drive-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search Amazon for: '${window.searchInput.value}'`,
+      action: utils.openAmazonSearchInNewTab(window.searchInput.value),
+      icon: 'images/amazon-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Search Gmail for: '${window.searchInput.value}'`,
+      action: utils.openGmailSearchInNewTab(window.searchInput.value),
+      icon: 'images/gmail-icon.png'
+    }
   }
 ];
 

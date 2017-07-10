@@ -14,11 +14,8 @@ document.body.appendChild(window.appElement);
 window.currentSearchSuggestions = utils.defaultSeachSuggestions;
 window.searchInput = document.querySelector(".cPalette__search");
 window.searchResultsList = document.querySelector(".cPalette__search-results");
-
-//Focus the input to prompt user for an action.
-window.searchInput.focus()
-
-
+// Focus the input to prompt user for an action.
+window.searchInput.focus();
 
 
 /**
@@ -27,6 +24,7 @@ window.searchInput.focus()
  * @returns {void}
  */
 window.renderMatchedSearchResults = function renderMatchedSearchResults(matchedSearchResults) {
+  // this can be simplied with JSX and make it easier to understand.
   for(const matchedResult of matchedSearchResults) {
     const searchResult = document.createElement("li");
 
@@ -65,90 +63,29 @@ window.renderMatchedSearchResults = function renderMatchedSearchResults(matchedS
 }
 
 
-window.searchInput.addEventListener("keyup", (event) => {
-  if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 13) {
-    return;
-  }
-  const userQuery = window.searchInput.value.trim();
-
-  if(userQuery === "") {
-    window.searchResultsList.innerHTML = "";
-    return
-  }
-  // our focus event will trigger keydown and thus render all of our search results. We don't want that.
-  // on every key down, re-rnder all results.
+window.searchInput.addEventListener("input", (event) => {
   window.searchResultsList.innerHTML = "";
   const matchedSearchResults = fuzzaldrinPlus
-    .filter(window.currentSearchSuggestions, userQuery, {key: 'keyword', maxResults: 20})
+    .filter(window.currentSearchSuggestions, window.searchInput.value, {key: 'keyword', maxResults: 20})
     .map((matchedResult) => {
-      matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, userQuery);
+      matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, window.searchInput.value);
       return matchedResult;
     });
-    // calculate math expressions regardless (works w00t)..try it with this tab: http://www.101ways.com/
-    //* ****Fallback searches if didn't get any matches**//
-    const foundMatches = matchedSearchResults.length > 0;
-    // check if input is a valid math expression
-    const userQueryIsMathExpression = utils.isValidMathExpression(userQuery);
 
-    if(userQueryIsMathExpression) {
-      const mathResult = utils.evalMathExpression(userQuery).toString();
-
-      matchedSearchResults.push({
-        'subtext': 'Copy this number to your clipboard.',
-        'text': userQuery,
-        // need to copy to clipboard
-
-        'icon': 'images/calculator-icon.png',
-        // need to fix this is hacky
-        textWithMatchedChars: mathResult
+    if(utils.isValidMathExpression(window.searchInput.value)) {
+      const mathResult = utils.evalMathExpression(window.searchInput.value).toString();
+      matchedSearchResults.push(utils.displayValidMathResult(mathResult))
+    }
+    if(utils.isIncompleteMathExpression(window.searchInput.value)) {
+      matchedSearchResults.push(utils.displayIncompleteMathError);
+    }
+    if(matchedSearchResults.length === 0 && window.searchInput.value !== '') {
+      utils.fallbackWebSearches.forEach((fallbackSearch) => {
+        matchedSearchResults.push(fallbackSearch())
       });
     }
-
-    // fallback searches (google)
-    if(!foundMatches) {
-      matchedSearchResults.push(
-        {
-          'action': utils.openGoogleSearchInNewTab(userQuery),
-          icon: 'images/google-search-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search Google for: '${userQuery}'`
-        },
-        {
-          'action': utils.openWikiSearchInNewTab(userQuery),
-          icon: 'images/wikipedia-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search Wikipedia for: '${userQuery}'`
-        },
-        {
-          'action': utils.openYoutubeSearchInNewTab(userQuery),
-          icon: 'images/youtube-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search YouTube for: '${userQuery}'`
-        },
-        {
-          'action': utils.openGoogleDriveSearchInNewTab(userQuery),
-          icon: 'images/google-drive-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search Google Drive for: '${userQuery}'`
-        },
-        {
-          'action': utils.openAmazonSearchInNewTab(userQuery),
-          icon: 'images/amazon-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search Amazon for: '${userQuery}'`
-        },
-        {
-          'action': utils.openGmailSearchInNewTab(userQuery),
-          icon: 'images/gmail-icon.png',
-          // fix this ugliness
-          'textWithMatchedChars': `Search Gmail for: '${userQuery}'`
-        }
-      );
-    }
-
   window.renderMatchedSearchResults(matchedSearchResults);
 });
-
 
 window.searchResultsList.addEventListener("mouseover", (event) => {
   // console.log(event.target);
@@ -158,7 +95,7 @@ window.searchResultsList.addEventListener("mouseover", (event) => {
     selectedElement.classList.add("selected");
     selectedElement.addEventListener("mouseout", (/* event*/) => {
       selectedElement.classList.remove("selected");
-}, {once: true}
+    }, {once: true}
     );
   }
 });
@@ -171,45 +108,75 @@ window.searchResultsList.addEventListener("mouseLeave", (event) => {
 });
 
 /**
+ * Deselect any current suggestions, selects a given suggestions.
+ * and then scrolls to show selection.
+ * @param {HTMLelement} nextSuggestion
+ * @returns {void}
+ */
+function selectSuggestion(nextSuggestion) {
+  window.selectedElement.classList.remove('selected');
+  nextSuggestion.classList.add('selected')
+
+}
+
+/**
+ * Rescrolls element
+ * @returns {void}
+ */
+function reScroll() {
+    try {
+      const scrollElement = window.selectedElement.previousSibling.previousSibling
+      scrollElement.scrollIntoView(alignToTop=true);
+    }
+    catch(err) {
+
+    /**/
+  }
+}
+
+
+/**
  * Handles up and down keys when the user has focus on the input field, enabling the user
  * to select the search.
  * @param  {event} event
  * @returns {void}
  */
 function handleInputArrowKeys(event) {
-  const resultsList = document.querySelector(".cPalette__search-results");
-  const resultsIsEmpty = !(resultsList.children.length > 0);
-
-  if (resultsIsEmpty) {
-    return;
-  }
-  // console.log("search results is populated. Arrow Keys work");
-  let highlightedResult = document.querySelector(".cPalette__search-result.selected");
-
-  if (highlightedResult) {
-    if (event.keyCode === 40) {
-      // Arrow Down
-      const nextSibling = highlightedResult.nextElementSibling;
-
-      if (nextSibling) {
-        highlightedResult.classList.remove("selected");
-        highlightedResult = nextSibling;
-        highlightedResult.classList.add("selected");
+  window.searchInput.focus();
+  window.selectedElement = document.querySelector('.selected');
+  if(window.selectedElement) {
+    if(event.keyCode === 40 || event.keyCode === 9 /* Down arrow OR Tab keyodes */) {
+      event.preventDefault();
+      const newSuggestion = window.selectedElement.nextElementSibling;
+      if(newSuggestion) {
+        selectSuggestion(newSuggestion);
+        reScroll();
       }
-    } else if (event.keyCode === 38) {
-      // Arrow Up
-      const nextSibling = highlightedResult.previousElementSibling;
-
-      if (nextSibling) {
-        highlightedResult.classList.remove("selected");
-        highlightedResult = nextSibling;
-        highlightedResult.classList.add("selected");
+      else {
+        // we've hit the bottom of the list so go all the way back up.
+        const newSuggestion = window.searchResultsList.children[0];
+        selectSuggestion(newSuggestion);
+        reScroll();
       }
-    } else if (event.keyCode === 13) {
-      // enter key
-      highlightedResult.click();
-      // console.log('enter on -->', highlightedResult);
     }
+    else if(event.keyCode === 38 /* Arrow Up */) {
+      event.preventDefault();
+      const newSuggestion = window.selectedElement.previousSibling;
+      if(newSuggestion) {
+        selectSuggestion(newSuggestion);
+        reScroll();
+      }
+    }
+    else if(event.keyCode === 13 /* Enter key*/) {
+      window.selectedElement.click();
+    }
+    else if(event.which === 8) {
+      // Backspace Key
+      if(window.searchInput.value === '') {
+        // if the user
+      }
+    }
+
   }
 }
 

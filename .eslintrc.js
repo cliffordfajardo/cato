@@ -24,7 +24,7 @@ module.exports = {
     }],
     "block-scoped-var": "error",
     "block-spacing": "error",
-    "brace-style": ["error", "1tbs"],
+    "brace-style": ["error", "stroustrup"],
     "comma-dangle": "error",
     "comma-spacing": ["error", {
       "after": true,
@@ -56,7 +56,6 @@ module.exports = {
     "jsx-quotes": "error",
     "key-spacing": "error",
     "keyword-spacing": "off",
-    "line-comment-position": "error",
     "linebreak-style": ["error", "unix"],
     "lines-around-comment": "error",
     "lines-around-directive": "error",
