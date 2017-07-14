@@ -1,5 +1,8 @@
 const utils = {};
 const mathexp = require('math-expression-evaluator');
+const domain = require('getdomain')
+const dango = require('dango');
+const sortBy = require('lodash.sortby');
 
 /**
  * Creates a new tab taking the user to his/her bookmarks.
@@ -100,13 +103,12 @@ utils.toggleMuteAllTabs = function toggleMuteAllTabs() {
     browserWindows.forEach((browserWindow) => {
 
       browserWindow.tabs.forEach((tab) => {
-        const isMuted = tab.mutedInfo.muted;
-        chrome.tabs.update({'muted': !isMuted});
+        chrome.tabs.update(tab.id, {'muted': !tab.mutedInfo.muted})
       });
+
     });
   });
 }
-
 
 /**
  * Creates a new tab taking the user to his/her browsing history.
@@ -192,6 +194,92 @@ utils.toggleFullscreenForActiveWindow = function toggleFullscreenForActiveWindow
 
 
 /**
+ * Sort all tabs across all windows by website name.
+ * @returns {void}
+ */
+utils.sortAllTabs = function sortAllTabs() {
+  chrome.windows.getAll({populate: true}, (browserWindows) => {
+    browserWindows.forEach((browserWindow) => {
+      let browserWindowTabs = [];
+
+      browserWindow.tabs.forEach((tab) => {
+        browserWindowTabs.push({id: tab.id, domain: domain.origin(tab.url)})
+      });
+      browserWindowTabs = sortBy(browserWindowTabs, ['domain']);
+      browserWindowTabs.forEach((tab, index) => chrome.tabs.move(tab.id, {index}));
+    });
+  });
+}
+
+/**
+ * Move all tabs to the active window the user is viewing and sort the tabs.
+ * @returns {void}
+ */
+utils.mergeSortAllTabs = function mergeSortAllTabs() {
+  chrome.windows.getCurrent((activeWindow) => {
+    console.log(activeWindow)
+    let allTabs = [];
+    let index = 0;
+
+    chrome.windows.getAll({populate: true}, (browserWindows) => {
+
+      browserWindows.forEach((browserWindow) => {
+
+        browserWindow.tabs.forEach((tab) => {
+          allTabs.push({id: tab.id, domain: domain.origin(tab.url)})
+        });
+        allTabs = sortBy(allTabs, ['domain']);
+
+        allTabs.forEach((tab) => {
+          chrome.tabs.move(tab.id, {windowId: activeWindow.id, index});
+          index += 1;
+        });
+      });
+
+    });
+  })
+}
+
+
+/**
+ * Move the current tab to the left
+ * @returns {void}
+ */
+utils.moveActiveTabRight = function moveActiveTabRight() {
+  chrome.tabs.query({'active': true, 'currentWindow': true}, (tabs) => {
+    const currentTab = tabs[0];
+    chrome.tabs.move(currentTab.id, {index: currentTab.index + 1});
+  });
+}
+
+
+/**
+ * Move the current tab to the left
+ * @returns {void}
+ */
+utils.moveActiveTabLeft = function moveActiveTabLeft() {
+  chrome.tabs.query({'active': true, 'currentWindow': true}, (tabs) => {
+    const currentTab = tabs[0];
+    chrome.tabs.move(currentTab.id, {index: currentTab.index - 1});
+  });
+}
+
+/**
+ * Detach the current tab and place it in a new window.
+ * @returns {void}
+ */
+utils.detachActiveTabToNewWindow = function detachActiveTabToNewWindow() {
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    const currentTab = tabs[0];
+
+    chrome.windows.create({tabId: currentTab.id}, (newWindow) => {
+      chrome.tabs.move({windowId: newWindow.id, index: -1});
+    });
+  })
+}
+
+
+/**
  * brings up the print window for a webpage.
  * @returns {void}
  */
@@ -207,7 +295,6 @@ utils.printActiveTab = function printActiveTab() {
 utils.closeActiveTab = function closeActiveTab() {
   chrome.tabs.query({'active': true, currentWindow: true}, (tabs) => {
     const activeTab = tabs[0];
-
     chrome.tabs.remove(activeTab.id);
   });
 }
@@ -366,21 +453,6 @@ utils.isIncompleteMathExpression = function isIncompleteMathExpression(userInput
 }
 
 
-/**
- * A function that defines the sort order.
- * @param  {any} extension1
- * @param  {any} extension2
- * @returns {array}
- */
-utils.sortByName = function sortByName(extension1, extension2) {
-  if(extension1.name < extension2.name) {
-    return -1
-  }
-  if(extension1.name > extension2.name) {
-    return 1;
-  }
-  return 0;
-}
 
 
 /**
@@ -474,11 +546,6 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
 }
 
 
-// utils.deleteBookmark = function deleteBookmark(bookmark){
-//   // chrome.bookmarks.removeTree(bookmark.id)
-// }
-
-
 /**
  * Go forward in the current tab's history.
  * @returns {void}
@@ -512,7 +579,7 @@ utils.displayAllExtensions = function displayAllExtensions() {
         return extensionOrApp.type === 'extension' &&
           extensionOrApp.name !== "Awesome Task Launcher"
       })
-      .sort(utils.sortByName);
+      extensions = sortBy(extensions, ['name'])
 
       window.currentSearchSuggestions = extensions.map((extension) => {
         const action = {
@@ -537,12 +604,12 @@ utils.displayAllExtensions = function displayAllExtensions() {
   window.searchInput.setAttribute('placeholder', 'Uninstall an extension');
 
   chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
+    let extensions = extensionsAndApps
       .filter((extensionOrApp) => {
         return extensionOrApp.type === 'extension' &&
           extensionOrApp.name !== "Awesome Task Launcher"
       })
-      .sort(utils.sortByName);
+      extensions = sortBy(extensions, ['name'])
 
       window.currentSearchSuggestions = extensions.map((extension) => {
         const action = {
@@ -567,34 +634,37 @@ utils.displayActiveExtensions = function displayActiveExtensions() {
   window.searchInput.setAttribute('placeholder', 'Disable an extension');
 
   chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
+    let extensions = extensionsAndApps
       .filter((extensionOrApp) => {
         return extensionOrApp.type === 'extension' &&
           extensionOrApp.name !== "Awesome Task Launcher" &&
           extensionOrApp.enabled;
       })
-      .sort(utils.sortByName);
 
-      window.currentSearchSuggestions = extensions.map((extension) => {
-        const action = {
-          keyword: `${extension.name}`,
-          action: () => chrome.management.setEnabled(extension.id, false),
-          icon: utils.useAvalableExtensionIcon(extension)
-        };
-        return action;
-      });
-      // display a message nothing found
-      if(window.currentSearchSuggestions.length === 0) {
-        const noInactiveExtensionMessage = {
-          keyword: 'No Active Extensions Found',
-          icon: 'images/chrome-icon.png'
-        }
-        window.currentSearchSuggestions.push(noInactiveExtensionMessage);
-        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    extensions = sortBy(extensions, ['name'])
+
+    window.currentSearchSuggestions = extensions.map((extension) => {
+      const action = {
+        keyword: `${extension.name}`,
+        action: () => chrome.management.setEnabled(extension.id, false),
+        icon: utils.useAvalableExtensionIcon(extension)
+      };
+      return action;
+    });
+
+    // display a message nothing found
+    if(window.currentSearchSuggestions.length === 0) {
+      const noInactiveExtensionMessage = {
+        keyword: 'No Active Extensions Found',
+        icon: 'images/chrome-icon.png'
       }
-      else {
-        window.renderMatchedSearchResults(window.currentSearchSuggestions);
-      }
+      window.currentSearchSuggestions.push(noInactiveExtensionMessage);
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    }
+    else {
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    }
+
   });
 }
 
@@ -609,35 +679,37 @@ utils.displayInactiveExtensions = function displayInactiveExtensions() {
   window.searchInput.setAttribute('placeholder', 'Enable an extension');
 
   chrome.management.getAll((extensionsAndApps) => {
-    const extensions = extensionsAndApps
+    let extensions = extensionsAndApps
       .filter((extensionOrApp) => {
         return extensionOrApp.type === 'extension' &&
           extensionOrApp.name !== "Awesome Task Launcher" &&
           !extensionOrApp.enabled;
       })
-      .sort(utils.sortByName);
 
-      window.currentSearchSuggestions = extensions.map((extension) => {
-        const suggestion = {
-          keyword: `${extension.name}`,
-          action: () => chrome.management.setEnabled(extension.id, true),
-          icon: utils.useAvalableExtensionIcon(extension)
-        };
-        return suggestion;
-      });
+    extensions = sortBy(extensions, ['name'])
 
-      // display a message nothing found
-      if(window.currentSearchSuggestions.length === 0) {
-        const noInactiveExtensionMessage = {
-          keyword: 'No Disabled Extensions Found',
-          icon: 'images/chrome-icon.png'
-        }
-        window.currentSearchSuggestions.push(noInactiveExtensionMessage);
-        window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    window.currentSearchSuggestions = extensions.map((extension) => {
+      const suggestion = {
+        keyword: `${extension.name}`,
+        action: () => chrome.management.setEnabled(extension.id, true),
+        icon: utils.useAvalableExtensionIcon(extension)
+      };
+      return suggestion;
+    });
+
+    // display a message nothing found
+    if(window.currentSearchSuggestions.length === 0) {
+      const noInactiveExtensionMessage = {
+        keyword: 'No Disabled Extensions Found',
+        icon: 'images/chrome-icon.png'
       }
-      else {
-        window.renderMatchedSearchResults(window.currentSearchSuggestions);
-      }
+      window.currentSearchSuggestions.push(noInactiveExtensionMessage);
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    }
+    else {
+      window.renderMatchedSearchResults(window.currentSearchSuggestions);
+    }
+
   });
 }
 
@@ -658,13 +730,161 @@ utils.displayOpenTabs = function displayOpenTabs() {
         const suggestion = {
           'action': utils.switchToTabById(tab.windowId, tab.id),
           'icon': tab.favIconUrl || 'images/blank-page.png',
-          'keyword': `${tab.title}`
+          'keyword': `${tab.title}`,
+          subtext: `${tab.url}`
         };
         window.currentSearchSuggestions.push(suggestion);
       })
     });
-    window.renderMatchedSearchResults(window.currentSearchSuggestions.sort(utils.sortByName));
+    window.renderMatchedSearchResults(window.currentSearchSuggestions);
   });
+}
+
+/**
+ * Determines if a node is a folder
+ * @param  {object} node
+ * @returns {boolean}
+ */
+utils.isFolder = (node) => 'children' in node
+
+/**
+ * Determines if a node is a bookmark.
+ * @param  {object}  node
+ * @returns {boolean}
+ */
+utils.isBookmark = (node) => 'url' in node;
+
+/**
+ * traverse tree root looks like this
+ * [{
+ *  childre: [
+ *    {
+ *      children: [..],
+ *      dateAdded: 234343434,
+ *      dateGroupModified: 343434343,
+ *      id: "1",
+ *      index: 0,
+ *      parentId: '0',
+ *      title: "Bookmarks Bar"
+ *    },
+ *    {
+ *      children: [..],
+ *      dateAdded: 234343434,
+ *      dateGroupModified: 3434343434 ,
+ *      id: "2",
+ *      index: 1,
+ *      parentId: '0',
+ *      title: "Bookmarks Bar"
+ *    },
+
+ *  ]
+ *  dateAdded: 123374837438,
+ *  id: 0,
+ *  title: ''
+
+ * }]
+ * any node with the `children` is a folder.
+ * @returns {void}
+ */
+utils.displayAllBookmarks = function displayAllBookmarks() {
+  window.searchInput.value = '';
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Search for a Bookmark');
+  window.currentSearchSuggestions = [];
+
+  chrome.bookmarks.getTree((nodes) => {
+    //root node starts of in an array like so: [{}]. You can't add/remove stuff from the node (had id:0)
+
+    // eslint-disable-next-line
+    function recurseTree(nodes) {
+      for(let node of nodes) {
+        if(utils.isBookmark(node)) {
+          const suggestion = {
+            keyword: node.title,
+            subtext: node.url,
+            action: () => chrome.tabs.create({url: node.url}),
+            icon: `chrome://favicon/${node.url}`
+          };
+          window.currentSearchSuggestions.push(suggestion);
+        }
+        else if(utils.isFolder(node)) {
+          recurseTree(node.children);
+        }
+      }
+    }
+    recurseTree(nodes);
+
+    window.renderMatchedSearchResults(window.currentSearchSuggestions);
+  })
+}
+
+/**
+ * Bookmark/unbookmark the active tab.
+ * @returns {void}
+ */
+utils.toggleBookmarkForActiveTab = function toggleBookmarkForActiveTab() {
+  chrome.tabs.query({'active': true, currentWindow: true}, (tabs) => {
+    const activeTab = tabs[0];
+    // Since each bookmark url is unique, we can use the current tab's url to find if we bookmarked the tab already.
+    chrome.bookmarks.search({url: activeTab.url}, (bookmarks) => {
+      if(bookmarks.length === 0) {
+        chrome.bookmarks.create({title: activeTab.title, url: activeTab.url});
+      }
+      else {
+        // apparently, you can bookmark the same page in a different tab.
+        bookmarks.forEach((bookmark) => chrome.bookmarks.remove(bookmark.id))
+      }
+    });
+  })
+}
+
+
+/**
+ * NOTE: the search result page requires me to type & send the result to an API & wait, so simply typing
+ * won't do anything. I need to requery the API on every input change.
+ * @returns {Boolean} [description]
+ */
+utils.displayOnlineQueryEmojis = function displayOnlineQueryEmojis() {
+  window.searchInput.value = '';
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Search for an Emoji');
+  window.currentSearchSuggestions = [];
+
+  //I'll need to requery Dango again when I'm in the new search scope
+  dango('pizza').then(emojiList => {
+    let topSuggestionResult = ''; // merge all the results together for the first result
+    emojiList.forEach(emoji => topSuggestionResult += emoji.text);
+    const topSuggestion = {
+      keyword: topSuggestionResult,
+      icon: 'images/dango-icon.png',
+      action: () => {
+        document.addEventListener('copy', (event) => {
+          event.preventDefault();
+          event.clipboardData.setData('text/plain', topSuggestionResult);
+        }, {once: true});
+        document.execCommand('copy');
+      }
+    }
+    window.currentSearchSuggestions.push(topSuggestion);
+
+    emojiList.slice(1).forEach((emoji) => {
+      const suggestion = {
+        keyword: emoji.text,
+        icon: 'images/dango-icon.png',
+        action: () => {
+          document.addEventListener('copy', (event) => {
+            event.preventDefault();
+            event.clipboardData.setData('text/plain', topSuggestionResult);
+          }, {once: true});
+          document.execCommand('copy');
+        }
+      }
+      window.currentSearchSuggestions.push(suggestion);
+    })
+
+    window.renderMatchedSearchResults(window.currentSearchSuggestions);
+  });
+
 }
 
 /**
@@ -747,6 +967,33 @@ utils.changePlayRate2 = function changePlayRate2() {
       changePlayRate()
     `
   })
+}
+
+/** FIX: get a webpack loader to transform this.
+ * Applies a dark CSS theme to a webpage to save your eyes!
+ * @returns {void} [description]
+ */
+utils.activateNightMode = function activateNightMode() {
+  chrome.tabs.executeScript(null, {
+    code: `
+      function toggleNightMode(){
+        let nightModeIsOn = document.getElementById('nightmode') === null ? false: true;
+        if(nightModeIsOn){
+          let nightModeStyle = document.getElementById('nightmode');
+          nightModeStyle.remove();
+        } else {
+          //create the style tag containing nightmode styles to inject to page.
+          let htmlElement = document.querySelector("html");
+          let styleElement = document.createElement('style');
+          styleElement.id = "nightmode";
+          styleElement.type = 'text/css'
+          styleElement.innerHTML = ''
+          htmlElement.appendChild(styleElement)
+        }
+      }
+      toggleNightMode();
+    `
+  });
 }
 
 
@@ -927,6 +1174,58 @@ utils.defaultSeachSuggestions = [
     keyword: 'Change Tab',
     icon: 'images/chrome-icon.png',
     action: utils.displayOpenTabs
+  },
+  {
+    keyword: 'Night Mode',
+    icon: 'images/chrome-icon.png',
+    action: utils.activateNightMode
+  },
+  {
+    keyword: 'Find Bookmark',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayAllBookmarks
+  },
+  {
+    keyword: 'Bookmark / Unbookmark Tab',
+    subtext: 'Bookmark or Unbookmark the current page',
+    icon: 'images/chrome-icon.png',
+    action: utils.toggleBookmarkForActiveTab
+  },
+  {
+    keyword: "Sort Tabs",
+    subtext: 'Sort tabs by website. Useful for grouping relevant tabs together',
+    action: utils.sortAllTabs,
+    icon: 'images/chrome-icon.png'
+  },
+  {
+    keyword: "Merge Sort Tabs",
+    subtext: 'Move all tabs to the current window and sort them.',
+    action: utils.mergeSortAllTabs,
+    icon: 'images/chrome-icon.png'
+  },
+  {
+    keyword: "Detach Tab",
+    subtext: 'Detach the current tab & place it in new window',
+    action: utils.detachActiveTabToNewWindow,
+    icon: 'images/chrome-icon.png'
+  },
+  {
+    keyword: "Move Tab Right",
+    subtext: 'Swap places with the tab on the right.',
+    action: utils.moveActiveTabRight,
+    icon: 'images/chrome-icon.png'
+  },
+  {
+    keyword: "Move Tab Left",
+    subtext: 'Swap places with the tab on the left.',
+    action: utils.moveActiveTabLeft,
+    icon: 'images/chrome-icon.png'
+  },
+
+  {
+    keyword: 'Find Emoji',
+    icon: 'images/dango-icon.png',
+    action: utils.displayOnlineQueryEmojis
   }
 ];
 
