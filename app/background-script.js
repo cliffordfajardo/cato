@@ -5,6 +5,17 @@ require('./popup.scss');
 const fuzzaldrinPlus = require('fuzzaldrin-plus');
 const utils = require('./common/utils');
 const appHTML = require("./components/command-palette/command-palette.html");
+const low = require('lowdb');
+let db = low('db');
+// debugging easier.
+window.db = db;
+
+// initialize clipboard db
+db.defaults({browserClipboard: []}).write();
+
+
+console.log('localstorage state:\n', db.getState())
+
 
 /* ***********************Bootstrap app markup & set up globals**************************/
 window.appElement = document.createElement("div");
@@ -181,3 +192,19 @@ function handleInputArrowKeys(event) {
 }
 
 window.searchInput.addEventListener("keyup", handleInputArrowKeys);
+
+
+/**
+ * Listen for messages sent from the content script.
+ *
+ * Typical use cases: listening for a clipboard copy event on webpage, sending the copied text to background-script,
+ * saving data to popup.html's storage.
+ */
+chrome.runtime.onMessage.addListener(function onMessage(request, sender, sendResponse) {
+  if (request.type === "copy-event") {
+    console.log('BG: recieved CS message');
+    db.get('browserClipboard')
+      .push(request)
+      .write();
+  }
+});

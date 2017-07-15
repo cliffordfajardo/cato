@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const WriteFilePlugin = require('write-file-webpack-plugin');
+const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const webpack = require('webpack');
 
 //our npm script defines the env.
@@ -13,11 +14,19 @@ const cssProduction = ExtractTextPlugin.extract({
   use: ['css-loader', 'sass-loader']
 });
 
-var cssConfig = isProduction ? cssProduction : cssDevelopment;
+const cssConfig = isProduction ? cssProduction : cssDevelopment;
 // console.log('cssConfig -->', cssConfig)
 
 
-var config = {
+const config = {
+  entry: {
+    content: './app/content-script.js',
+    background: './app/background-script.js'
+  },
+  output: {
+    path: path.resolve(__dirname, './chrome-extension/'),
+    filename: 'app.[name]-script.js'
+  },
   module: {
     rules: [
       {
@@ -54,17 +63,19 @@ var config = {
         */
         new WriteFilePlugin({
           //dont include hot files.
-          test: /^(?!.*(hot)).*/,
+          test: /^(?!.*(hot)).*/
         }),
 
         //This plugin will generate an HTML5 file for you that includes all your webpack bundles in the body using script tags
         new HtmlWebpackPlugin({
           title: 'My App',
           template: './app/popup.html',
-          filename: 'popup.html'
+          filename: 'popup.html',
           // minify: { collapseWhitespace:true},
           // hash: true
+          excludeAssets: [/app.content-script.*.js/]
         }),
+        new HtmlWebpackExcludeAssetsPlugin(),
 
         /*Create bundle.css & output it to the `dist` folder.
          File destination is determined by the output property above
@@ -73,7 +84,7 @@ var config = {
         new ExtractTextPlugin({
           filename: 'bundle.css',
           disable: !isProduction
-        }),
+        })
       ],
       devServer: {
         contentBase: path.join(__dirname, 'dist'),
@@ -85,17 +96,5 @@ var config = {
       }
 };
 
-let backgroundScriptsConfig = Object.assign({}, {
-  name: 'background-script',
-  entry: './app/background-script.js',
-  output: {
-    path: path.resolve(__dirname, './chrome-extension/'),
-    filename: 'app.background-script.js',
-  },
-  module: config.module,
-  plugins: config.plugins
-});
 
-module.exports = [
-  backgroundScriptsConfig
-]
+module.exports = config;

@@ -217,7 +217,6 @@ utils.sortAllTabs = function sortAllTabs() {
  */
 utils.mergeSortAllTabs = function mergeSortAllTabs() {
   chrome.windows.getCurrent((activeWindow) => {
-    console.log(activeWindow)
     let allTabs = [];
     let index = 0;
 
@@ -381,6 +380,18 @@ utils.openGoogleSearchInNewTab = function openGoogleSearchInNewTab(query) {
 
 
 /**
+ * Searches google translate  with the query provided by a user in a new tab.
+ * @param  {string} query
+ * @returns {void}
+ */
+utils.openGooglTranslateInNewTab = function openGooglTranslateInNewTab(query) {
+  return function closureFunc() {
+    chrome.tabs.create({url: `https://translate.google.com/?text=${encodeURIComponent(query)}`});
+  }
+}
+
+
+/**
  * Searches gmail with the query provided by a user in a new tab.
  * @param {string} query
  * @returns {void}
@@ -451,8 +462,6 @@ utils.isIncompleteMathExpression = function isIncompleteMathExpression(userInput
     }
   }
 }
-
-
 
 
 /**
@@ -793,11 +802,11 @@ utils.displayAllBookmarks = function displayAllBookmarks() {
   window.currentSearchSuggestions = [];
 
   chrome.bookmarks.getTree((nodes) => {
-    //root node starts of in an array like so: [{}]. You can't add/remove stuff from the node (had id:0)
+    // root node starts of in an array like so: [{}]. You can't add/remove stuff from the node (had id:0)
 
     // eslint-disable-next-line
     function recurseTree(nodes) {
-      for(let node of nodes) {
+      for(const node of nodes) {
         if(utils.isBookmark(node)) {
           const suggestion = {
             keyword: node.title,
@@ -994,6 +1003,38 @@ utils.activateNightMode = function activateNightMode() {
       toggleNightMode();
     `
   });
+}
+
+
+utils.displayClipboardSuggestions = function displayClipboardSuggestions() {
+  window.searchInput.value = '';
+  window.searchResultsList.innerHTML = "";
+  window.searchInput.setAttribute('placeholder', 'Select or Search your Clipboard.');
+  window.currentSearchSuggestions = [];
+  let clipboardHistory = [];
+  clipboardHistory = window.db
+    .get('browserClipboard')
+    .value()
+    .reverse();
+
+  clipboardHistory.forEach((copiedItem) => {
+    const suggestion = {
+      keyword: copiedItem.copiedContent,
+      subtext: '',
+      icon: copiedItem.iconUrl,
+      action: () => {
+        document.addEventListener('copy', (event) => {
+          event.preventDefault();
+          event.clipboardData.setData('text/plain', copiedItem.content);
+        }, {once: true});
+        document.execCommand('copy');
+      }
+    }
+    window.currentSearchSuggestions.push(suggestion);
+
+  });
+  window.renderMatchedSearchResults(window.currentSearchSuggestions);
+
 }
 
 
@@ -1221,11 +1262,15 @@ utils.defaultSeachSuggestions = [
     action: utils.moveActiveTabLeft,
     icon: 'images/chrome-icon.png'
   },
-
   {
     keyword: 'Find Emoji',
     icon: 'images/dango-icon.png',
     action: utils.displayOnlineQueryEmojis
+  },
+  {
+    keyword: 'Clipboard',
+    icon: 'images/chrome-icon.png',
+    action: utils.displayClipboardSuggestions
   }
 ];
 
@@ -1235,6 +1280,13 @@ utils.fallbackWebSearches = [
       textWithMatchedChars: `Search Google for: '${window.searchInput.value}'`,
       action: utils.openGoogleSearchInNewTab(window.searchInput.value),
       icon: 'images/google-search-icon.png'
+    }
+  },
+  function fallbackSearch() {
+    return {
+      textWithMatchedChars: `Translate: ${window.searchInput.value}`,
+      action: utils.openGooglTranslateInNewTab(window.searchInput.value),
+      icon: 'images/google-translate-icon.png'
     }
   },
   function fallbackSearch() {

@@ -9,9 +9,17 @@
     "default_popup": "./popup.html",
     "default_title": "Click here!"
   },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": [
+      "./app.content-script.js"
+    ],
+    "run_at": "document_end"
+  }],
   "background": {
     "persistent": false,
     "scripts": [
+      "./hot-reload.js",
       "./app.background-script.js"
     ]
   },
