@@ -21,7 +21,8 @@ const cssConfig = isProduction ? cssProduction : cssDevelopment;
 const config = {
   entry: {
     content: './app/content-script.js',
-    background: './app/background-script.js'
+    background: './app/background-script.js',
+    options: './app/options.js'
   },
   output: {
     path: path.resolve(__dirname, './chrome-extension/'),
@@ -73,7 +74,15 @@ const config = {
           filename: 'popup.html',
           // minify: { collapseWhitespace:true},
           // hash: true
-          excludeAssets: [/app.content-script.*.js/]
+          excludeAssets: [/app.content-script.*.js/, /app.options-script.*.js/]
+        }),
+        new HtmlWebpackPlugin({
+          title: 'My App - Options',
+          template: './app/options.html',
+          filename: 'options.html',
+          // minify: { collapseWhitespace:true},
+          // hash: true
+          excludeAssets: [/app.content-script.*.js/, /app.background-script.*.js/]
         }),
         new HtmlWebpackExcludeAssetsPlugin(),
 

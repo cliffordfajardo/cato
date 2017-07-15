@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6f471487e1fb698c5a86"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "437254da0f4276cb39eb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -943,6 +943,15 @@ const sortBy = __webpack_require__("./node_modules/lodash.sortby/index.js");
 utils.openBookmarksTab = function openBookmarksTab() {
   chrome.tabs.create({url: "chrome://bookmarks"});
 }
+
+
+/**
+ * Open options/settings page for this app.
+ * @returns {void}
+ */
+ utils.openAppOptionsTab = function openAppOptionsTab() {
+   chrome.runtime.openOptionsPage();
+ }
 
 
 /**
@@ -1980,6 +1989,12 @@ Add commands liek so.. what if we get a 10 matches and the one we want is at pos
 
 
 utils.defaultSeachSuggestions = [
+  {
+    keyword: "Open CliffordApp Settings",
+    subtext: "The settings page for this Chrome Extension",
+    action: utils.openAppOptionsTab,
+    icon: 'images/chrome-icon.png'
+  },
   {
     keyword: "Open Bookmarks",
     subtext: "chrome://bookmarks",

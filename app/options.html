@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App - Options</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+  <!-- No header, and the drawer stays open on larger screens (fixed drawer). -->
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+    <div class="mdl-layout__drawer">
+      <span class="mdl-layout-title">Settings</span>
+      <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="#appearance">Appearance</a>
+        <a class="mdl-navigation__link" href="#general">General</a>
+        <a class="mdl-navigation__link" href="#plugins">Plugins</a>
+        <a class="mdl-navigation__link" href="#usage">Usage</a>
+      </nav>
+    </div>
+    <main class="mdl-layout__content">
+      <div class="page-content">
+
+        <div id="page-appearance">appearance</div>
+        <div id="page-general"  class="hide">general</div>
+        <div id="page-plugins"  class="hide">plugins</div>
+        <div id="page-usage"  class="hide">page usage</div>
+
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

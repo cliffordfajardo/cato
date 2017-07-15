@@ -9,6 +9,7 @@
     "default_popup": "./popup.html",
     "default_title": "Click here!"
   },
+  "options_page": "./options.html",
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": [

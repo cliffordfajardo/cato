@@ -14,6 +14,15 @@ utils.openBookmarksTab = function openBookmarksTab() {
 
 
 /**
+ * Open options/settings page for this app.
+ * @returns {void}
+ */
+ utils.openAppOptionsTab = function openAppOptionsTab() {
+   chrome.runtime.openOptionsPage();
+ }
+
+
+/**
  * Creates a new tab taking the user to his/her recent downloads.
  * @returns {void}
  */
@@ -1048,6 +1057,12 @@ Add commands liek so.. what if we get a 10 matches and the one we want is at pos
 
 
 utils.defaultSeachSuggestions = [
+  {
+    keyword: "Open CliffordApp Settings",
+    subtext: "The settings page for this Chrome Extension",
+    action: utils.openAppOptionsTab,
+    icon: 'images/chrome-icon.png'
+  },
   {
     keyword: "Open Bookmarks",
     subtext: "chrome://bookmarks",

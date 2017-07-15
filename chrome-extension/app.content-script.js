@@ -60,7 +60,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "6f471487e1fb698c5a86"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "437254da0f4276cb39eb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -240,7 +240,7 @@
 /******/ 				};
 /******/ 			});
 /******/ 			hotUpdate = {};
-/******/ 			var chunkId = 1;
+/******/ 			var chunkId = 2;
 /******/ 			{ // eslint-disable-line no-lone-blocks
 /******/ 				/*globals chunkId */
 /******/ 				hotEnsureUpdateChunk(chunkId);
