@@ -5,28 +5,16 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const webpack = require('webpack');
 
-//our npm script defines the env.
-const isProduction = process.env.NODE_ENV === "production";
-
-const cssDevelopment = ['style-loader', 'css-loader', 'sass-loader'];
-const cssProduction = ExtractTextPlugin.extract({
-  fallback: 'style-loader',
-  use: ['css-loader', 'sass-loader']
-});
-
-const cssConfig = isProduction ? cssProduction : cssDevelopment;
-// console.log('cssConfig -->', cssConfig)
-
 
 const config = {
   entry: {
-    content: './app/content-script.js',
-    background: './app/background-script.js',
-    options: './app/options.js'
+    content: './app/content.js',
+    popup: './app/pages/popup/popup.js',
+    options: './app/pages/options/options.js'
   },
   output: {
     path: path.resolve(__dirname, './chrome-extension/'),
-    filename: 'app.[name]-script.js'
+    filename: '[name].js'
   },
   module: {
     rules: [
@@ -46,7 +34,11 @@ const config = {
       {
       //allows us to import our css. But, we need style loader so the css created in our js bundle is added to a <style> tag in our html doc
         test: /\.scss$/,
-        use: cssConfig
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          //resolve-url-loader may be chained before sass-loader if necessary
+          use: ['css-loader', 'sass-loader']
+        })
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
@@ -55,7 +47,6 @@ const config = {
         ]
       }
     ]
-
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
@@ -76,29 +67,23 @@ const config = {
     //This plugin will generate an HTML5 file for you that includes all your webpack bundles in the body using script tags
     new HtmlWebpackPlugin({
       title: 'My App',
-      template: './app/popup.html',
+      template: './app/pages/popup/popup.html',
       filename: 'popup.html',
-      // minify: { collapseWhitespace:true},
-      // hash: true
-      excludeAssets: [/app.content-script.*.js/, /app.options-script.*.js/]
+      excludeAssets: [/content.js/, /options.js/, /background.css/, /options.css/]
     }),
     new HtmlWebpackPlugin({
       title: 'My App - Options',
-      template: './app/options.html',
+      template: './app/pages/options/options.html',
       filename: 'options.html',
-      // minify: { collapseWhitespace:true},
-      // hash: true
-      excludeAssets: [/app.content-script.*.js/, /app.background-script.*.js/]
+      excludeAssets: [/content.js/, /background.css/]
     }),
     new HtmlWebpackExcludeAssetsPlugin(),
 
     /*Create bundle.css & output it to the `dist` folder.
      File destination is determined by the output property above
-     NOTE: the bundle.css will only be outputted if we run production mode.
      */
     new ExtractTextPlugin({
-      filename: 'bundle.css',
-      disable: !isProduction
+      filename: '[name].css'
     })
   ],
   devServer: {

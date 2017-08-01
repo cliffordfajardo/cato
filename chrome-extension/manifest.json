@@ -13,7 +13,7 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": [
-      "./app.content-script.js"
+      "./content.js"
     ],
     "run_at": "document_end"
   }],
@@ -21,7 +21,7 @@
     "persistent": false,
     "scripts": [
       "./hot-reload.js",
-      "./app.background-script.js"
+      "./popup.js"
     ]
   },
   "offline_enabled": true,

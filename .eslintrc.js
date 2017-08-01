@@ -11,7 +11,10 @@ module.exports = {
     "chrome": true
   },
   parserOptions: {
-    ecmaVersion: 6
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      jsx: true
+    }
   },
   rules: {
     "accessor-pairs": "error",
@@ -42,8 +45,6 @@ module.exports = {
      }],
     "eqeqeq": "error",
     "func-call-spacing": "error",
-    "func-name-matching": "error",
-    "func-names": ["error", "always"],
     "generator-star-spacing": "error",
     "global-require": "error",
     "guard-for-in": "error",
@@ -61,7 +62,6 @@ module.exports = {
     "lines-around-directive": "error",
     "max-depth": "error",
     "max-len": "off",
-    "max-lines": "error",
     "max-nested-callbacks": "error",
     "max-params": ["error", 4],
     "max-statements-per-line": "error",
@@ -148,7 +148,6 @@ module.exports = {
     "no-whitespace-before-property": "error",
     "no-with": "error",
     "object-curly-spacing": ["error", "never"],
-    "object-shorthand": "error",
     "one-var": "off",
     "one-var-declaration-per-line": "error",
     "prefer-const": "error",

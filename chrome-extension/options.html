@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>App - Options</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
+<link href="popup.css" rel="stylesheet"><link href="options.css" rel="stylesheet"></head>
 <body>
   <!-- No header, and the drawer stays open on larger screens (fixed drawer). -->
   <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
@@ -133,14 +133,15 @@
             </div>
 
             <div>
-              <label>Search Result Subtext Color:</label>
-              <input class="color-picker" type="color" data-cssvariable="--search-result-subtext-color">
+              <label>Search Result subtitle Color:</label>
+              <input class="color-picker" type="color" data-cssvariable="--search-result-subtitle-color">
             </div>
 
-            <div>
-              <label>Search Result Subtext Size:</label>
-              <input class="font-resizer control" type="number" data-cssvariable="--search-result-subtext-size" data-sizing='px'>
-            </div>
+
+            <!-- <div>
+              <label>Search Result subtitle Size:</label>
+              <input class="font-resizer control" type="number" data-cssvariable="--search-result-subtitle-size" data-sizing='px'>
+            </div> -->
           </section>
 
           <button id="reset-appearance-settings" class="mdl-button mdl-js-button mdl-button--raised">
@@ -185,5 +186,5 @@
     </main>
   </div>
 
-<script type="text/javascript" src="app.options-script.js"></script></body>
+<script type="text/javascript" src="popup.js"></script><script type="text/javascript" src="options.js"></script></body>
 </html>

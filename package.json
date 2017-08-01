@@ -2,7 +2,6 @@
   "name": "test-fuzzy",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server",
     "cleaninstall": "rm -rf node_modules && npm i",
@@ -22,7 +21,6 @@
     "fuzzaldrin-plus": "^0.4.1",
     "getdomain": "^1.0.6",
     "grapnel": "^0.6.4",
-    "jQuery": "^1.7.4",
     "jquery": "^3.2.1",
     "lodash.sortby": "^4.7.0",
     "lowdb": "^0.16.2",
@@ -45,6 +43,7 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "^3.2.0",
+    "webpack-cyclic-dependency-checker": "0.0.1",
     "webpack-dev-server": "^2.4.5",
     "write-file-webpack-plugin": "^4.1.0"
   },
