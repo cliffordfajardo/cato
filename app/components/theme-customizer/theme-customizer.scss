@@ -1,0 +1,94 @@
+.theme-controls {
+  width: 480px;
+  background: #222222;
+  padding: 25px;
+  padding-top:10px;
+  box-shadow: 0 6px 2px 0 rgba(0,0,0,.14), 0 7px 8px -2px rgba(0,0,0,.2), 0 1px 83px 0 rgba(0,0,0,4.12);
+}
+
+.theme-controls__group-title {
+  color: white;
+  border-bottom: 2px solid white;
+  &:not(:first-child) {
+    margin: 5px 0;
+  }
+}
+.theme-controls__control-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: -3px;
+}
+.theme-controls__label {
+  font-size: 14px;
+  color: white;
+  display: inline-block;
+  align-self: center;
+}
+
+.theme-controls__input_color-picker {
+  background: none;
+  border:none;
+  border-image: none;
+  width: 60px;
+  height: 30px;
+  border: 0;
+  padding: 0;
+}
+
+.theme-controls__input_font-resizer {
+  width: 60px;
+  padding-left: 10px !important;
+  height: 20px;
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.theme-controls__footer {
+  display: flex;
+  margin-top: 20px;
+
+  .theme-controls__button {
+    &:first-child {
+      margin-right: 20px;
+    }
+  }
+}
+
+
+.theme-modal {
+  width: 460px !important; //just add a more specific class..theme instead of appearance
+  background: #222222;
+  .theme-modal__title,
+  .theme-modal__content {
+    color: white;
+  }
+
+  .theme-modal__button{
+    &.theme-modal__button_save {
+      background: white;
+    }
+    &.theme-modal__button_cancel {
+      background: hotpink;
+      color: white;
+    }
+  }
+
+}
+
+.theme-controls-actions {
+
+  .theme-controls__button {
+    border:none;
+    padding: 12px;
+    border-radius: 2px;
+
+    &_reset {
+      background: white;
+    }
+    &_save {
+      background: hotpink;
+      color: white;
+    }
+  }
+
+}

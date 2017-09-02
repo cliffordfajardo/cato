@@ -1,6 +1,14 @@
+@import "../../components/command-palette/command-palette.scss";
+
+:root {
+  --app-width-size: 500px;
+}
 html {
+  //This needs to be done on the popup. Not the command pallete
+  //or else when we search & get for example 1 result, we'll see the full
+  //height of the popupstill.
   min-height: 60px;
-  min-width: 560px;
+  width: var(--app-width-size);
 }
 body {
   margin: 0;

@@ -1,36 +1,48 @@
+//add bulma font module
 :root {
-  --command-palette-background-color: white;
-  --search-input-background-color: white;
-  --search-input-caret-color: black;
-  --search-input-scrollbar-background-color: lightgrey;
-  --search-result-selected-background-color: lightgrey;
-  --search-result-text-keyword-match-color: black;
-  --search-result-text-color: black;
-  --search-input-text-color: black;
-  --search-result-subtitle-color: shadylady;
-  --search-result-text-size: 15px;
-  --search-result-subtitle-size: 12px;
-  --search-input-text-size: 30px;
-  --search-input-scrollbar-width: 2px;
+  //classic #FFFFFF is the default theme
 
-  // --search-result-keyword-size: 12px;
+  // element background colors
+  --app-background-color: #222222;
+  --search-input-background-color: #222222;
+  --search-input-caret-color: #FFFFFF;
+  --search-results-scrollbar-color: #FFFFFF;
+  --selected-search-result-item-background-color: #000000;
+
+  // text sizing
+  --search-input-value-text-size: 30px;
+  --search-result-item-title-text-size: 16px;
+  --search-result-item-subtitle-text-size: 13px;
+
+
+
+  //text colors
+  --search-input-value-text-color: #FFFFFF;
+  --selected-search-result-item-title-text-color: #FFFFFF;
+  --selected-search-result-item-subtitle-text-color: #FFFFFF;
+  --selected-search-result-item-character-match-color: #FFFFFF;
+  --search-result-item-title-text-color: #FFFFFF;
+  --search-result-item-subtitle-text-color: #FFFFFF;
+  --search-result-item-character-match-color: #FFFFFF;
+
+  //spacing
+  --search-results-scrollbar-width: 2px;
 }
 
-
 .cPalette {
-  background: var(--command-palette-background-color);
-  border-radius: 3px;
+  background: var(--app-background-color);
+  min-height: 60px;
+  width: var(--app-width-size);
 
   .cPalette__search {
     background-color: var(--search-input-background-color);
-    caret-color: var(--psearch-input-caret-color);
+    caret-color: var(--search-input-caret-color);
     border: none;
-    color: var(--search-input-text-color);
+    color: var(--search-input-value-text-color);
     height: 50px;
-    font-size: var(--search-input-text-size);
+    font-size: var(--search-input-value-text-size);
     font-weight: 300;
     width: 100%;
-    margin-right: 10px;
     padding: 5px 5px 5px 15px;
     &:focus {
       outline: none;
@@ -48,59 +60,74 @@
   .cPalette__search-input-wrapper {
     display: flex;
     justify-content: space-between;
-    padding: 5px 10px 0 5px;
+    padding: 5px 5px 5px 5px;
   }
 
-  // .cPalette__search-results-preview {
-  //   width: 50%;
-  // }
   .cPalette__search-results {
     max-height: 312px;
     margin: 0;
-    background: var(--command-palette-background-color);
+    background: var(--app-background-color);
     overflow-y: scroll;
     padding: 0;
-
-    .selected {
-      background-color: var(--search-result-selected-background-color);
-    }
   }
 
   .cPalette__scrollbar::-webkit-scrollbar {
-    width: var(--search-input-scrollbar-width);
+    width: var(--search-results-scrollbar-width);
   }
-  /*.cPalette__scrollbar::-webkit-scrollbar-track {
-    background: black;
-  }*/
+
   .cPalette__scrollbar::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    background-color: var(--search-input-scrollbar-background-color);
+    background-color: var(--search-results-scrollbar-color);
   }
 
   .cPalette__search-result {
     display: flex;
     align-items: center;
     padding: 10px 10px 10px 20px;
-    color: var(--search-result-text-color);
     list-style: none;
 
+    &.selected {
+      background-color: var(--selected-search-result-item-background-color);
+
+      .cPalette__search-result-title {
+        color: var(--selected-search-result-item-title-text-color);
+      }
+      .cPalette__search-result-subtitle {
+        color: var(--selected-search-result-item-subtitle-text-color);
+      }
+      strong {
+        color: var(--selected-search-result-item-character-match-color)
+      }
+
+    }
+
     .cPalette__search-result-icon{
-      height: 32px;
-      width: 32px;
+      height: 20px;
+      width: 20px;
       margin-right: 10px
     }
 
     .cPalette__search-result-text-info {
       display: flex;
       flex-direction: column;
+      width: 80%;
     }
 
-    .cPalette__search-result-text {
-      font-size: var(--search-result-text-size);
+
+    .cPalette__search-result-title {
+      color: var(--search-result-item-title-text-color);
+      font-size: var(--search-result-item-title-text-size);
+      margin-bottom: 2px;
     }
     .cPalette__search-result-subtitle {
-      color: var(--search-result-subtitle-color);
-      font-size: var(--search-result-subtitle-size);
+      color: var(--search-result-item-subtitle-text-color);
+      font-size: var(--search-result-item-subtitle-text-size);
+    }
+
+    .cPalette__search-result-title,
+    .cPalette__search-result-subtitle {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
 
@@ -108,7 +135,7 @@
     // .char-match-highlight {
     strong {
       font-weight: bold;
-      color: var(--search-result-text-keyword-match-color);
+      color: var(--search-result-item-character-match-color);
     }
   }
 }
