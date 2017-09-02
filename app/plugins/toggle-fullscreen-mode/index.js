@@ -1,21 +1,25 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Toggle Fullscreen",
   subtitle: 'Turn fullscreen mode on/off for the window.',
   valid: true,
   autocomplete: false,
-  action: function() {
-    chrome.windows.get(chrome.windows.WINDOW_ID_CURRENT, (activeWindow) => {
-      const isFullScreen = activeWindow.state === 'fullscreen';
-
-      if (isFullScreen) {
-        chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, {state: "normal"});
-      }
-      else {
-        chrome.windows.update(chrome.windows.WINDOW_ID_CURRENT, {state: "fullscreen"});
-      }
-    });
-  },
+  action: toggleFullscreenMode,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function toggleFullscreenMode() {
+  const activeWindow = await browser.windows.get(browser.windows.WINDOW_ID_CURRENT)
+  const isFullScreen = activeWindow.state === 'fullscreen'
+
+  if (isFullScreen) {
+    browser.windows.update(browser.windows.WINDOW_ID_CURRENT, {state: "normal"})
+  }
+  else {
+    browser.windows.update(browser.windows.WINDOW_ID_CURRENT, {state: "fullscreen"})
+  }
+}
+
+module.exports = plugin

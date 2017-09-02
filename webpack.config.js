@@ -1,14 +1,15 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const WriteFilePlugin = require('write-file-webpack-plugin');
-const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
-const webpack = require('webpack');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const WriteFilePlugin = require('write-file-webpack-plugin')
+const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin')
+const webpack = require('webpack')
+
+const isProduction = process.env.NODE_ENV === "production"
 
 
 const config = {
   entry: {
-    content: './app/content.js',
     popup: './app/pages/popup/popup.js',
     options: './app/pages/options/options.js'
   },
@@ -69,15 +70,14 @@ const config = {
       title: 'My App',
       template: './app/pages/popup/popup.html',
       filename: 'popup.html',
-      excludeAssets: [/content.js/, /options.js/, /background.css/, /options.css/]
+      excludeChunks: ['options']
     }),
     new HtmlWebpackPlugin({
       title: 'My App - Options',
       template: './app/pages/options/options.html',
       filename: 'options.html',
-      excludeAssets: [/content.js/, /background.css/]
+      excludeChunks: ['popup']
     }),
-    new HtmlWebpackExcludeAssetsPlugin(),
 
     /*Create bundle.css & output it to the `dist` folder.
      File destination is determined by the output property above
@@ -94,7 +94,6 @@ const config = {
     stats: 'errors-only',
     open: true
   }
-};
+}
 
-
-module.exports = config;
+module.exports = config

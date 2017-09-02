@@ -1,13 +1,18 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Back",
   subtitle: 'Go back a page.',
-  autcomplete: false,
+  autocomplete: false,
   valid: true,
-  action: function() {
-    chrome.tabs.executeScript(null, {code: `window.history.back()`});
-    window.close();
-  },
+  action: goPageBack,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function goPageBack() {
+  await browser.tabs.executeScript(null, {code: `window.history.back()`})
+  window.close()
+}
+
+module.exports = plugin

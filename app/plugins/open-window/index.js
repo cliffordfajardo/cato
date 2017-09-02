@@ -1,12 +1,17 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "New Window",
   subtitle: 'Open a new browser window.',
-  autcomplete: false,
+  autocomplete: false,
   valid: true,
-  action: function() {
-    chrome.windows.create({});
-  },
+  action: openNewWindow,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function openNewWindow() {
+  browser.windows.create({})
+}
+
+module.exports = plugin

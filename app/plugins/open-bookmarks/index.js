@@ -1,12 +1,17 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Bookmarks",
   subtitle: 'View your bookmarks page.',
   valid: true,
-  autcomplete: false,
-  action: function() {
-    chrome.tabs.create({url: "chrome://bookmarks"});
-  },
+  autocomplete: false,
+  action: openBookmarks,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function openBookmarks() {
+  await browser.tabs.create({url: "chrome://bookmarks"})
+}
+
+module.exports = plugin

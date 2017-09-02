@@ -1,21 +1,19 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Reload All Tabs",
   subtitle: 'Reload the current tab.',
-  action: function() {
-    chrome.tabs.query({'active': true, currentWindow: true}, function (allTabs) {
-      const activeTab = allTabs[0];
-      chrome.tabs.reload(activeTab.id);
-
-      chrome.tabs.query({'active': false, currentWindow: true}, function (allTabs) {
-        allTabs.forEach((tab) => {
-          chrome.tabs.reload(tab.id);
-        });
-        window.close();
-      });
-
-    });
-  },
+  action: reloadAllTabs,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function reloadAllTabs() {
+  const allTabs = await browser.tabs.query({currentWindow: true})
+  for (const tab of allTabs) {
+    await browser.tabs.reload(tab.id)
+  }
+  window.close()
+}
+
+module.exports = plugin

@@ -1,12 +1,18 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+
+const plugin = {
   keyword: "Amazon",
   subtitle: 'Open Amazon.',
   valid: true,
-  autcomplete: false,
-  action: function() {
-    chrome.tabs.create({url: "https://amazon.com"});
-  },
+  autocomplete: false,
+  action: openAmazon,
   icon: {
     path: 'images/amazon-icon.png'
   }
 }
+
+async function openAmazon() {
+  await browser.tabs.create({url: "https://amazon.com"})
+}
+
+module.exports = plugin

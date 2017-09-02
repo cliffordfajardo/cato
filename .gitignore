@@ -63,3 +63,6 @@ Thumbs.db
 # Text Editors
 *.vscode
 *.sublime
+
+
+chrome-extension/

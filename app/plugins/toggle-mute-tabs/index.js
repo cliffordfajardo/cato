@@ -1,19 +1,23 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Mute/Unmute All Tab",
   subtitle: 'Mute or unmute all tabs.',
   valid: true,
-  action: function toggleMuteAllTabs() {
-    chrome.windows.getAll({populate: true}, (browserWindows) => {
-      browserWindows.forEach((browserWindow) => {
-
-        browserWindow.tabs.forEach((tab) => {
-          chrome.tabs.update(tab.id, {'muted': !tab.mutedInfo.muted})
-        });
-
-      });
-    });
-  },
+  action: toggleMuteAllTabs,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function toggleMuteAllTabs() {
+  const allWindows = await browser.windows.getAll({populate: true})
+
+  allWindows.forEach((browserWindow) => {
+    browserWindow.tabs.forEach((tab) => {
+      browser.tabs.update(tab.id, {'muted': !tab.mutedInfo.muted})
+    })
+    window.close()
+  })
+}
+
+module.exports = plugin

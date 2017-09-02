@@ -1,14 +1,16 @@
-const utils = {};
-const {h} = require('dom-chef');
-const fuzzaldrinPlus = require('fuzzaldrin-plus');
-const mathexp = require('math-expression-evaluator');
-const tinycolor = require('tinycolor2');
-
+const utils = {}
+const {h} = require('dom-chef')
+const fuzzaldrinPlus = require('fuzzaldrin-plus')
+const mathexp = require('math-expression-evaluator')
+const browser = require('webextension-polyfill')
 
 //DOM utilities
-utils.userQuery = () => window.searchInput.value;
-utils.clearSearchResults = () => window.searchResultsList.innerHTML = "";
-utils.highlightTopSuggestion = () => window.searchResultsList.children[0].classList.add("selected");
+utils.userQuery = () => window.userQuery || window.searchInput.value
+//todo create an alternative...we should have utils.userInputText
+//utils userQuery
+utils.clearSearchInput = () => window.searchInput = ""
+utils.clearSearchResults = () => window.searchResultsList.innerHTML = ""
+utils.highlightTopSuggestion = () => window.searchResultsList.children[0].classList.add("selected")
 
 
 
@@ -16,9 +18,9 @@ utils.createSuggestionElement = function(suggestion) {
   const element = (
     <li className="cPalette__search-result" onClick={suggestion.action}>
       <img className="cPalette__search-result-icon" src={suggestion.icon.path} />
-      <div className="cPalette__search-result-text-info">
+      <div className="cPalette__search-result-title-info">
         <div
-          className="cPalette__search-result-text"
+          className="cPalette__search-result-title"
           dangerouslySetInnerHTML={{__html: suggestion.textWithMatchedChars || suggestion.keyword}}>
         </div>
         <div
@@ -27,22 +29,19 @@ utils.createSuggestionElement = function(suggestion) {
         </div>
       </div>
     </li>
-  );
-  return element;
+  )
+
+  return element
 }
 
 
 
 utils.renderSuggestions = function (suggestions) {
   suggestions.forEach((suggestion) => {
-    const searchResulthasPreview = suggestion.preview !== undefined;
-    const searchResult = utils.createSuggestionElement(suggestion);
-    if(searchResulthasPreview){
-      searchResult.preview = suggestion.preview;
-    }
-    window.searchResultsList.appendChild(searchResult);
+    const searchResult = utils.createSuggestionElement(suggestion)
+    window.searchResultsList.appendChild(searchResult)
   })
-  utils.highlightTopSuggestion();
+  utils.highlightTopSuggestion()
 }
 
 
@@ -53,31 +52,31 @@ utils.getMatches = function(userInput, suggestions) {
   const matches = fuzzaldrinPlus
     .filter(suggestions, userInput, {key: 'keyword', maxResults: 20})
     .map((matchedResult) => {
-      matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, utils.userQuery());
-      return matchedResult;
-    });
-  return matches;
+      matchedResult.textWithMatchedChars = fuzzaldrinPlus.wrap(matchedResult.keyword, utils.userQuery())
+      return matchedResult
+    })
+  return matches
 }
 
 
 utils.getFallbackSuggestions = function(userInput) {
-  const fallbackSuggestions = [];
+  const fallbackSuggestions = []
   //Check if input is a math expression
   if(utils.isValidMathExpression(userInput)) {
-    const mathResult = utils.evalMathExpression(userInput).toString();
-    fallbackSuggestions.push(utils.displayValidMathResult(mathResult));
+    const mathResult = utils.evalMathExpression(userInput).toString()
+    fallbackSuggestions.push(utils.displayValidMathResult(mathResult))
   }
   if(utils.isIncompleteMathExpression(userInput)) {
-    fallbackSuggestions.push(utils.displayIncompleteMathError);
+    fallbackSuggestions.push(utils.displayIncompleteMathError)
   }
 
   if(window.searchInput.value !== '') {
     utils.fallbackWebSearches.forEach((fallbackSearch) => {
       fallbackSuggestions.push(fallbackSearch())
-    });
+    })
   }
 
-  return fallbackSuggestions;
+  return fallbackSuggestions
 }
 
 
@@ -91,27 +90,27 @@ utils.getFallbackSuggestions = function(userInput) {
 
 //****************************Math utilities********************************/
 utils.evalMathExpression = function(string) {
-  return mathexp.eval(string);
+  return mathexp.eval(string)
 }
 
 utils.isValidMathExpression = function(string) {
   try {
-    mathexp.eval(string);
-    return true;
+    mathexp.eval(string)
+    return true
   }
   catch(exception) {
-    return false;
+    return false
   }
 }
 
 utils.isIncompleteMathExpression = function(string) {
   try {
-    mathexp.eval(string);
-    return false;
+    mathexp.eval(string)
+    return false
   }
   catch(exception) {
     if(exception.message === "complete the expression" && string !== '') {
-      return true;
+      return true
     }
   }
 }
@@ -138,46 +137,32 @@ utils.displayIncompleteMathError = {
 
 
 //****************************GENERAL UTILITIES********************************/
-utils.debounce = function(func, wait, immediate) {
-  let timeout;
-  return function() {
-    let context = this,
-      args = arguments;
 
-    const later = function() {
-      timeout = null;
-      if (!immediate) {
-        func.apply(context, args);
-      }
-    };
-
-    const callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait || 200);
-    if (callNow) {
-      func.apply(context, args);
-    }
-  };
-};
-
-
-utils.getCurrentAppearanceSettings = () => window.db.get('appearanceSettings').value();
 
 /**
- * Resets the appearance of the launcher to the default color.
+ * Resets the appearance of the launcher to the default color (page only.)
  *@returns {void}
  */
-utils.resetAppearanceSettings = function resetAppearanceSettings(){
-  //reset local storage (if the user is viewing the options page, this will not update it.)
-  window.db.set('appearanceSettings', utils.defaultAppearanceSettings)
-    .write();
-
-    //update root variables
-  for (const key in utils.defaultAppearanceSettings) {
-    if (utils.defaultAppearanceSettings.hasOwnProperty(key)) {
-      utils.updateCSSVariable(key, utils.defaultAppearanceSettings[key])
+utils.resetFakeAppTheme = () => {
+  //update root variables on the page.
+  for (const key in utils.defaultThemeConfig) {
+    if (utils.defaultThemeConfig.hasOwnProperty(key)) {
+      utils.updateCSSVariable(key, utils.defaultThemeConfig[key])
     }
   }
+}
+
+utils.resetThemeInputValue = (input) => {
+  const themeProperty = input.dataset.cssvariable
+  let themeConfigValue = utils.defaultThemeConfig[themeProperty]
+
+  if (input.type === 'number') {
+    themeConfigValue = themeConfigValue.slice(0, -2) // 500px -> 500
+  }
+  //update the value attribute in the markup to reflect changes (not the live value)
+  input.setAttribute('value', themeConfigValue)
+  //update the value 'property' on the element (contains live value)
+  input.value = themeConfigValue
 }
 
 /**
@@ -187,22 +172,24 @@ utils.resetAppearanceSettings = function resetAppearanceSettings(){
  * @param  {HTMLElement} element
  * @returns {void}
  */
-utils.updateCSSVariable = function updateCSSVariable(propertyName, value, element=document.documentElement) {
-  element.style.setProperty(propertyName, value);
+utils.updateCSSVariable = function updateCSSVariable(propertyName, value, element = document.documentElement) {
+  element.style.setProperty(propertyName, value)
 }
 
 
+/**
+ *@description
+ Update the 'value' property on an input value on change, then
+ update the root variable values on the page.
+ */
+utils.handleThemeInputValueChanges = (event) => {
+  const element = event.target
+  const valueSuffix = element.dataset.sizing || ''
+  const cssProperty = element.dataset.cssvariable
+  const cssPropertyValue = element.value + valueSuffix
 
-/*
-Add commands liek so.. what if we get a 10 matches and the one we want is at position 5..we don't want to requeyr
-'shortcut': {
-        'windows': ['^', 'R'],
-        'mac': ['⌘', '1...9']
-    }
-*/
-
-
-
+  utils.updateCSSVariable(`${cssProperty}`, cssPropertyValue)
+}
 
 
 
@@ -214,30 +201,31 @@ Add commands liek so.. what if we get a 10 matches and the one we want is at pos
 
 //****************************CHROME EXTENSION UTILITIES*******************/
 utils.isFolder = (node) => 'children' in node
-utils.isBookmark = (node) => 'url' in node;
+utils.isBookmark = (node) => 'url' in node
 
 utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
   if(typeof extension.icons !== 'object') {
     return 'images/blank-page-icon.png'
   }
-  const icon = extension.icons[3] || extension.icons[2] || extension.icons[1] || extension.icons[0];
-  return icon.url;
+  const icon = extension.icons[3] || extension.icons[2] || extension.icons[1] || extension.icons[0]
+  return icon.url
 }
 
+//TODO.........remove
 utils.switchToTabById = function switchToTabById(windowId, tabId) {
   // since chrome.tabs.update is limited to switching to tabs only within the current window
   // we need to switch to the window we need first.
   return function closureFunc() {
     chrome.windows.update(windowId, {focused: true}, () => {
-      chrome.tabs.update(tabId, {'active': true});
+      chrome.tabs.update(tabId, {'active': true})
     })
   }
 }
 
 utils.uninstallExtension = function uninstallExtension(extension) {
   return function closureFunc() {
-    const options = {showConfirmDialog: true};
-    chrome.management.uninstall(extension.id, options);
+    const options = {showConfirmDialog: true}
+    chrome.management.uninstall(extension.id, options)
   }
 }
 
@@ -270,23 +258,38 @@ utils.uninstallExtension = function uninstallExtension(extension) {
 
 
 /**
- * Contains the default configuration for the appereance of the command palette.
+ * Contains the default configuration for the appearance of the command palette.
  * @type {Object}
  */
-utils.defaultAppearanceSettings = {
-  '--command-palette-background-color': '#ffffff',
-  '--search-input-background-color': '#ffffff',
-  '--search-input-caret-color': '#000000',
-  '--search-input-scrollbar-background-color': '#d3d3d3',
-  '--search-result-selected-background-color': '#d3d3d3',
-  '--search-result-text-keyword-match-color': '#000000',
-  '--search-result-text-color': '#000000',
-  '--search-input-text-color': '#000000',
-  '--search-result-subtitle-color': '#d3d3d3',
-  '--search-result-text-size': '15px',
-  '--search-result-subtitle-size': '12px',
-  '--search-input-text-size': '30px',
-  '--search-input-scrollbar-width': '2px'
+utils.defaultThemeConfig = {
+  //classic #FFFFFF is the default theme
+
+  // element background colors
+  "--app-background-color": "#222222",
+  "--app-width-size": "500px",
+  "--search-input-background-color": "#222222",
+  "--search-input-caret-color": "#FFFFFF",
+  "--search-results-scrollbar-color": "#FFFFFF",
+  "--selected-search-result-item-background-color": "#000000",
+
+  // text sizing
+  "--search-input-value-text-size": "30px",
+  "--search-result-item-title-text-size": "16px",
+  "--search-result-item-subtitle-text-size": "14px",
+
+
+
+  //text colors
+  "--search-input-value-text-color": "#FFFFFF",
+  "--selected-search-result-item-title-text-color": "#FFFFFF",
+  "--selected-search-result-item-subtitle-text-color": "#FFFFFF",
+  "--selected-search-result-item-character-match-color": "#FFFFFF",
+  "--search-result-item-title-text-color": "#FFFFFF",
+  "--search-result-item-subtitle--text-color": "#FFFFFF",
+  "--search-result-item-character-match-color": "#FFFFFF",
+
+  //spacing
+  "--search-results-scrollbar-width": "2px"
 }
 
 
@@ -298,7 +301,7 @@ utils.fallbackWebSearches = [
 
     function search(query) {
       return function closureFunc() {
-        chrome.tabs.create({url: `https://www.google.com/search?q=${encodeURIComponent(query)}`});
+        chrome.tabs.create({url: `https://www.google.com/search?q=${encodeURIComponent(query)}`})
       }
     }
 
@@ -310,7 +313,7 @@ utils.fallbackWebSearches = [
       }
     }
   }
-];
+]
 
 
-module.exports = utils;
+module.exports = utils

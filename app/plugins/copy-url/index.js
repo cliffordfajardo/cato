@@ -1,24 +1,26 @@
-module.exports = {
+const browser = require('webextension-polyfill')
+const plugin = {
   keyword: "Copy URL",
   subtitle: 'Copy the URL of the page.',
-  autcomplete: false,
+  autocomplete: false,
   valid: true,
-  action: function() {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      const activeTabUrl = tabs[0].url;
-
-      document.addEventListener('copy', (event) => {
-        const text = activeTabUrl;
-
-        event.clipboardData.setData('text/plain', text);
-        event.preventDefault();
-      }, {once: true});
-      // manually call 'copy', but this is usually triggered when user does 'cmd-c'
-      document.execCommand('copy');
-    });
-    window.close();
-  },
+  action: copyUrl,
   icon: {
     path: 'images/chrome-icon.png'
   }
 }
+
+async function copyUrl() {
+  const tabs = await browser.tabs.query({active: true, currentWindow: true})
+  const activeTabUrl = tabs[0].url
+
+  document.addEventListener('copy', (event) => {
+    event.preventDefault() //this doesn't work w/o this. Investigate why for exploration's sake?
+    const text = activeTabUrl
+    event.clipboardData.setData('text/plain', text)
+  }, {once: true})
+  document.execCommand('copy')
+  window.close()
+}
+
+module.exports = plugin
