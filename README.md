@@ -6,7 +6,7 @@
 [![Tweet][twitter-badge]][twitter]
 
 > Cato - a browser extension that allows you to control your browser with simple commands.
-<!-- **Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)** -->
+**Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)**🐈
 
 
 ## Install
