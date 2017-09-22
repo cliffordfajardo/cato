@@ -32,16 +32,17 @@
 			<img src="media/example-command-showcase2.png">
 		</td>
 	</tr>
+</table>
 
-	<tr>
+<table style="max-width: 700px;">
+	<tr><!-- Prevent zebra stripes --></tr>
+  <tr>
 		<td>
 			<img src="media/example-change-tab.png">
 		</td>
 		<td>
 			<img src="media/example-disable-extension.png">
 		</td>
-	</tr>
-
 	</tr>
 </table>
 
