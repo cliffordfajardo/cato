@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Gmail",
   subtitle: 'Open Gmail',
-  valid: true,
-  autocomplete: false,
   action: openGmail,
   icon: {
-    path: 'images/gmail-icon.png'
+    path: 'images/gmail-icon.svg'
   }
 }
 

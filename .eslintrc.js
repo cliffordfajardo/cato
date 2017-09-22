@@ -107,7 +107,6 @@ module.exports = {
     "no-param-reassign": "error",
     "no-path-concat": "error",
     "no-plusplus": "error",
-    "no-process-env": "error",
     "no-process-exit": "error",
     "no-proto": "error",
     "no-prototype-builtins": "error",

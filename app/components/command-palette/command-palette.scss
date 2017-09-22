@@ -1,41 +1,35 @@
 //add bulma font module
+
 :root {
   //classic #FFFFFF is the default theme
-
   // element background colors
-  --app-background-color: #222222;
-  --search-input-background-color: #222222;
-  --search-input-caret-color: #FFFFFF;
-  --search-results-scrollbar-color: #FFFFFF;
-  --selected-search-result-item-background-color: #000000;
-
+  --app-background-color: #FFFFFF;
+  --search-input-caret-color: #222222;
+  --search-results-scrollbar-color: #222222;
+  --selected-suggestion-background-color: #222222;
   // text sizing
   --search-input-value-text-size: 30px;
-  --search-result-item-title-text-size: 16px;
-  --search-result-item-subtitle-text-size: 13px;
-
-
-
+  --suggestion-title-text-size: 16px;
+  --suggestion-subtitle-text-size: 13px;
   //text colors
-  --search-input-value-text-color: #FFFFFF;
-  --selected-search-result-item-title-text-color: #FFFFFF;
-  --selected-search-result-item-subtitle-text-color: #FFFFFF;
-  --selected-search-result-item-character-match-color: #FFFFFF;
-  --search-result-item-title-text-color: #FFFFFF;
-  --search-result-item-subtitle-text-color: #FFFFFF;
-  --search-result-item-character-match-color: #FFFFFF;
-
+  --search-input-value-text-color: #222222;
+  --selected-suggestion-title-text-color: #FFFFFF;
+  --selected-suggestion-subtitle-text-color: #FFFFFF;
+  --selected-suggestion-character-match-color: #FFFFFF;
+  --suggestion-title-text-color: #222222;
+  --suggestion-subtitle-text-color: #222222;
+  --suggestion-character-match-color: #222222;
   //spacing
   --search-results-scrollbar-width: 2px;
 }
 
-.cPalette {
+.cLauncher {
   background: var(--app-background-color);
   min-height: 60px;
   width: var(--app-width-size);
 
-  .cPalette__search {
-    background-color: var(--search-input-background-color);
+  .cLauncher__search {
+    background-color: var(--app-background-color);
     caret-color: var(--search-input-caret-color);
     border: none;
     color: var(--search-input-value-text-color);
@@ -44,98 +38,94 @@
     font-weight: 300;
     width: 100%;
     padding: 5px 5px 5px 15px;
+
     &:focus {
       outline: none;
     }
   }
 
-  .cPalette__icon {
+  .cLauncher__icon {
     margin-top: 5px;
   }
 
-  .cPalette__search-results-wrapper {
-    // display: flex;
-  }
-
-  .cPalette__search-input-wrapper {
+  .cLauncher__search-input-wrapper {
     display: flex;
     justify-content: space-between;
-    padding: 5px 5px 5px 5px;
+    padding: 5px;
   }
 
-  .cPalette__search-results {
-    max-height: 312px;
+  .cLauncher__suggestions {
+    max-height: 300px;
     margin: 0;
     background: var(--app-background-color);
     overflow-y: scroll;
     padding: 0;
   }
 
-  .cPalette__scrollbar::-webkit-scrollbar {
+  .cLauncher__scrollbar::-webkit-scrollbar {
     width: var(--search-results-scrollbar-width);
   }
 
-  .cPalette__scrollbar::-webkit-scrollbar-thumb {
+  .cLauncher__scrollbar::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: var(--search-results-scrollbar-color);
   }
 
-  .cPalette__search-result {
+  .cLauncher__suggestion {
     display: flex;
     align-items: center;
     padding: 10px 10px 10px 20px;
     list-style: none;
+    height: 60px;
 
     &.selected {
-      background-color: var(--selected-search-result-item-background-color);
+      background-color: var(--selected-suggestion-background-color);
 
-      .cPalette__search-result-title {
-        color: var(--selected-search-result-item-title-text-color);
+      .cLauncher__suggestion-title {
+        color: var(--selected-suggestion-title-text-color);
       }
-      .cPalette__search-result-subtitle {
-        color: var(--selected-search-result-item-subtitle-text-color);
+
+      .cLauncher__suggestion-subtitle {
+        color: var(--selected-suggestion-subtitle-text-color);
       }
+
       strong {
-        color: var(--selected-search-result-item-character-match-color)
+        color: var(--selected-suggestion-character-match-color);
       }
-
     }
 
-    .cPalette__search-result-icon{
-      height: 20px;
+    .cLauncher__suggestion-icon {
       width: 20px;
-      margin-right: 10px
+      margin-right: 10px;
     }
 
-    .cPalette__search-result-text-info {
+    .cLauncher__suggestion-text-info {
       display: flex;
       flex-direction: column;
       width: 80%;
     }
 
-
-    .cPalette__search-result-title {
-      color: var(--search-result-item-title-text-color);
-      font-size: var(--search-result-item-title-text-size);
+    .cLauncher__suggestion-title {
+      color: var(--suggestion-title-text-color);
+      font-size: var(--suggestion-title-text-size);
       margin-bottom: 2px;
     }
-    .cPalette__search-result-subtitle {
-      color: var(--search-result-item-subtitle-text-color);
-      font-size: var(--search-result-item-subtitle-text-size);
+
+    .cLauncher__suggestion-subtitle {
+      color: var(--suggestion-subtitle-text-color);
+      font-size: var(--suggestion-subtitle-text-size);
     }
 
-    .cPalette__search-result-title,
-    .cPalette__search-result-subtitle {
+    .cLauncher__suggestion-subtitle,
+    .cLauncher__suggestion-title {
+      max-width: 400px;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
-
-
-    //todo: configure fuzzaldrinPlus to use other element with a class instead.
-    // .char-match-highlight {
     strong {
       font-weight: bold;
-      color: var(--search-result-item-character-match-color);
+      color: var(--suggestion-character-match-color);
     }
   }
 }

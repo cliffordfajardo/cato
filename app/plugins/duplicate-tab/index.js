@@ -3,10 +3,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Duplicate Tab",
   subtitle: 'Duplicate the tab and place it in a new tab.',
-  valid: true,
   action: duplicateTab,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

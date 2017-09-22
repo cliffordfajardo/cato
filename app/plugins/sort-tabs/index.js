@@ -5,10 +5,9 @@ const sortBy = require('lodash.sortby')
 const plugin = {
   keyword: "Sort Tabs",
   subtitle: 'Sort tabs by website.',
-  valid: true,
   action: sortTabs,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

@@ -1,11 +1,5 @@
 <section class="theme-controls">
-  <!-- Break into logical sections:
-    Background Colors
-    Text Colors
-    Text Sizing
 
-    Then we can remove the long names from HTML and make the width of the container less
-  -->
   <h1 class="theme-controls__group-title is-size-4">Background Coloring</h1>
   <div class="theme-controls__control-container">
     <label class="theme-controls__label">App</label>
@@ -13,13 +7,8 @@
   </div>
 
   <div class="theme-controls__control-container">
-    <label class="theme-controls__label">Search Input</label>
-    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--search-input-background-color">
-  </div>
-
-  <div class="theme-controls__control-container">
-    <label class="theme-controls__label">Selected Search Result Item</label>
-    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-search-result-item-background-color">
+    <label class="theme-controls__label">Selected Search Suggestion</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-suggestion-background-color">
   </div>
 
   <div class="theme-controls__control-container">
@@ -39,92 +28,68 @@
     <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--search-input-value-text-color">
   </div>
 
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Selected Search Result Item Title</label>
-      <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-search-result-item-title-text-color">
-    </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Selected Search Suggestion Title</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-suggestion-title-text-color">
+  </div>
 
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Selected Search Result Item Subtitle</label>
-      <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-search-result-item-subtitle-text-color">
-    </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Selected Search Suggestion Subtitle</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-suggestion-subtitle-text-color">
+  </div>
 
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Selected Search Result Item Character Match</label>
-      <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-search-result-item-character-match-color">
-    </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Selected Search Suggestion Character Match</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--selected-suggestion-character-match-color">
+  </div>
 
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Search Result Item Title</label>
-      <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--search-result-item-title-text-color">
-    </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Suggestion Title</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--suggestion-title-text-color">
+  </div>
 
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Search Result Item Subtitle</label>
-      <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--search-result-item-subtitle-text-color">
-    </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Suggestion Subtitle</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--suggestion-subtitle-text-color">
+  </div>
 
-      <div class="theme-controls__control-container">
-        <label class="theme-controls__label">Search Result Item Character Match</label>
-        <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--search-result-item-character-match-color">
-      </div>
-
-
-
-    <h1 class="theme-controls__group-title is-size-4">Spacing</h1>
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">App Width</label>
-      <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--app-width-size"
-        data-sizing="px">
-    </div>
-
-    <div class="theme-controls__control-container">
-      <label class="theme-controls__label">Search Results Scrollbar Width</label>
-      <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-results-scrollbar-width"
-        data-sizing='px'>
-    </div>
-
-    <h1 class="theme-controls__group-title is-size-4">Text Sizing</h1>
-      <div class="theme-controls__control-container">
-        <label class="theme-controls__label">Search Input Value</label>
-        <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-input-value-text-size" data-sizing='px'>
-      </div>
-
-      <div class="theme-controls__control-container">
-        <label class="theme-controls__label">Search Result Item Title</label>
-        <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-result-item-title-text-size" data-sizing='px'>
-      </div>
-
-      <div class="theme-controls__control-container">
-        <label class="theme-controls__label">Search Result Item Subtitle</label>
-        <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-result-item-subtitle-text-size" data-sizing='px'>
-      </div>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Suggestion Character Match</label>
+    <input class="theme-controls__input theme-controls__input_color-picker" type="color" data-cssvariable="--suggestion-character-match-color">
+  </div>
 
 
+  <h1 class="theme-controls__group-title is-size-4">Spacing</h1>
+  <!-- <div class="theme-controls__control-container">
+    <label class="theme-controls__label">App Width</label>
+    <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--app-width-size" data-sizing="px">
+  </div> -->
+
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Results Scrollbar Width</label>
+    <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-results-scrollbar-width" data-sizing='px'>
+  </div>
+
+  <h1 class="theme-controls__group-title is-size-4">Text Sizing</h1>
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Input Value</label>
+    <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--search-input-value-text-size" data-sizing='px'>
+  </div>
+
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Suggestion Title</label>
+    <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--suggestion-title-text-size" data-sizing='px'>
+  </div>
+
+  <div class="theme-controls__control-container">
+    <label class="theme-controls__label">Search Suggestion Subtitle</label>
+    <input class="theme-controls__input theme-controls__input_font-resizer" type="number" data-cssvariable="--suggestion-subtitle-text-size" data-sizing='px'>
+  </div>
 
   <footer class="theme-controls__footer">
     <div class="theme-controls-actions">
-      <button id="reset-theme-settings" class="theme-controls__button theme-controls__button_reset">Reset Theme</button>
-      <button id="save-theme-settings" class="theme-controls__button theme-controls__button_save">Save Settings</button>
+      <button id="reset-theme" class="theme-controls__button theme-controls__button_reset">Reset Theme</button>
     </div>
   </footer>
 
-
-  <div class="theme-modal hide">
-    <header class="modal-theme__header">
-      <h4 class="theme-modal__title">Save Your New Theme </h4>
-    </header>
-    <div class="theme-modal__content">
-      <input type="text" id="theme-name" placeholder="Theme Name" required>
-
-    </div>
-
-    <footer class="theme-modal__footer">
-      <div class="theme-modal__actions">
-        <button type="button" class="theme-modal__button theme-modal__button_cancel">Cancel</button>
-        <button type="button" class="theme-modal__button theme-modal__button_save">Save</button>
-      </div>
-
-    </footer>
-  </div>
 </section>

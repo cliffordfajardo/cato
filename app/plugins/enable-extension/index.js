@@ -5,19 +5,18 @@ const sortBy = require('lodash.sortby')
 const plugin = {
   keyword: "Enable Extension",
   subtitle: 'Enable one of your disabled chrome extensions.',
-  autocomplete: true,
-  hasSearchScope: true,
+  searchScope: 'Enable Extension',
   valid: false,
   action: enableExtension,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 
 async function enableExtension() {
   window.currentSearchSuggestions = []
-  if (!plugin.valid && plugin.autocomplete) {
-    window.searchInput.value = `${plugin.keyword} `
+  if (!plugin.valid) {
+    window.searchInput.value = `${plugin.searchScope} `
     window.searchResultsList.innerHTML = ""
 
     const extensionsAndApps = await browser.management.getAll()
@@ -48,7 +47,7 @@ async function enableExtension() {
       const noInactiveExtensionMessage = {
         keyword: 'No Disabled Extensions Found',
         icon: {
-          path: 'images/chrome-icon.png'
+          path: 'images/chrome-icon.svg'
         }
       }
       window.currentSearchSuggestions.push(noInactiveExtensionMessage)
@@ -56,6 +55,7 @@ async function enableExtension() {
     }
     else {
       utils.renderSuggestions(window.currentSearchSuggestions)
+      window.suggestionElements = document.querySelectorAll('.cLauncher__suggestion')
     }
   }
 }

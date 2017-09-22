@@ -1,12 +1,10 @@
 const browser = require('webextension-polyfill')
 const plugin = {
   keyword: 'Bookmark/Unbookmark page',
-  subtitle: 'Bookmark the page if it\'s not bookmarked, otherwise unbookmark it.',
-  autocomplete: false,
-  valid: true,
+  subtitle: 'Bookmark the page if not bookmarked, otherwise unbookmark it.',
   action: toggleBookmark,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

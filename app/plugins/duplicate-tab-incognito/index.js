@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Duplicate Tab Incognito",
   subtitle: 'Duplicate the tab and place it in an incognito window.',
-  autocomplete: false,
-  valid: true,
   action: duplicateTabIncognito,
   icon: {
-    path: 'images/incognito-icon.png'
+    path: 'images/incognito-icon.svg'
   }
 }
 

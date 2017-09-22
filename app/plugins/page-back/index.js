@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Back",
   subtitle: 'Go back a page.',
-  autocomplete: false,
-  valid: true,
   action: goPageBack,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

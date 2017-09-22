@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Move Tab Left",
   subtitle: 'Swap places with the tab on the right.',
-  autocomplete: 'Move Tab Left',
-  valid: true,
   action: moveTabLeft,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

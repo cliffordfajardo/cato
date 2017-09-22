@@ -5,11 +5,10 @@ const plugin = {
   keyword: "Change Tab",
   subtitle: 'Find an open tab and change to it.',
   valid: false,
-  hasSearchScope: true,
-  autocomplete: true,
+  searchScope: 'Change Tab',
   action: findTab,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 
@@ -17,8 +16,8 @@ async function findTab() {
   window.currentSearchSuggestions = []
   let allTabs = []
 
-  if (!plugin.valid && plugin.autocomplete) {
-    window.searchInput.value = `${plugin.keyword} `
+  if (!plugin.valid) {
+    window.searchInput.value = `${plugin.searchScope} `
     window.searchResultsList.innerHTML = ""
 
     const allWindows = await browser.windows.getAll({populate: true})
@@ -28,7 +27,7 @@ async function findTab() {
 
     allTabs.forEach((tab) => {
       const suggestion = {
-        'action': utils.switchToTabById(tab.windowId, tab.id),
+        'action': switchToTabById(tab.windowId, tab.id),
         'icon': {
           path: tab.favIconUrl || 'images/blank-page.png'
         },
@@ -39,6 +38,16 @@ async function findTab() {
     })
 
     utils.renderSuggestions(window.currentSearchSuggestions)
+    window.suggestionElements = document.querySelectorAll('.cLauncher__suggestion')
+  }
+}
+
+//Helper
+function switchToTabById(windowId, tabId) {
+  // tabs.update is limited to switching to tabs only within the current window, thus switch to the window we need first.
+  return async function closureFunc() {
+    await browser.windows.update(windowId, {focused:true})
+    await browser.tabs.update(tabId, {'active': true})
   }
 }
 

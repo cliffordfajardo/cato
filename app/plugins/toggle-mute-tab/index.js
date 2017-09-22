@@ -2,10 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Mute/Unmute Tab",
   subtitle: 'Mute the tab if it\'s unmuted otherwise unmute it.',
-  valid: true,
   action: toggleMuteTab,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+  "name": "Cato",
+  "description": "Cato - a command launcher for your web browser.",
+  "homepage_url": "https://github.com/cliffordfajardo/cato",
+  "version": "1.1.1",
+
+  "browser_action": {
+    "default_icon": "images/cato-logo.png",
+    "default_popup": "popup.html",
+    "default_title": "Cato"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "scripts": [ "popup.js"]
+  },
+  "icons": {
+    "16": "images/cato-logo16.png",
+    "48": "images/cato-logo48.png",
+    "128": "images/cato-logo128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "bookmarks",
+    "tabs",
+    "<all_urls>",
+    "management",
+    "storage"
+  ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Ctrl+J",
+        "mac": "Command+J",
+        "chromeos": "Ctrl+J",
+        "linux": "Ctrl+J"
+      }
+    }
+  }
+}

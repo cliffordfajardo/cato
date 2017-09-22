@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Google Drive",
   subtitle: 'Open Google Drive.',
-  valid: true,
-  autocomplete: false,
   action: openGoogleDrive,
   icon: {
-    path: 'images/google-drive-icon.png'
+    path: 'images/google-drive-icon.svg.svg'
   }
 }
 

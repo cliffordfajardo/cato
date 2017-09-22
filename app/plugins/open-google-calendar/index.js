@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Google Calendar",
   subtitle: 'Open Google Calendar',
-  valid: true,
-  autocomplete: false,
   action: openGoogleCalendar,
   icon: {
-    path: 'images/google-calendar-icon.png'
+    path: 'images/google-calendar-icon.svg'
   }
 }
 

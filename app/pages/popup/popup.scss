@@ -1,4 +1,15 @@
+@import "../../../node_modules/normalize.css/normalize.css";
 @import "../../components/command-palette/command-palette.scss";
+
+//START: Border-sizing reset
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+//END: Border-sizing reset
+
 
 :root {
   --app-width-size: 500px;
@@ -10,6 +21,7 @@ html {
   min-height: 60px;
   width: var(--app-width-size);
 }
+
 body {
   margin: 0;
   padding: 0;

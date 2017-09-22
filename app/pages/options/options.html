@@ -2,92 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>App - Options</title>
+  <title>Cato - Options/Settings</title>
 <body>
   <div class="sidebar">
     <div class="sidebar__title">Settings</div>
     <nav class="sidebar__nav">
-      <a class="sidebar__nav-link is-active" href="#appearance">
-        <img src="/images/theming-logo.svg">
-        Theming
+      <a class="sidebar__nav-link is-active" href="#theming">
+        <img src="/images/theming-logo.svg" /> Theming
       </a>
-      <a class="sidebar__nav-link" href="#plugins">
-        <img src="/images/plugins-logo.svg">
-        Plugins
-      </a>
-      <a class="sidebar__nav-link" href="#usage">
-        <img src="/images/chart-logo.svg">
-        Usage
-      </a>
+      <!-- TODO: add once appcounter feature is complete. -->
+      <!-- <a class="sidebar__nav-link" href="#usage">
+        <img src="/images/chart-logo.svg" /> Usage
+      </a> -->
       <a class="sidebar__nav-link" href="#about">
-        <img src="/images/about-logo.svg">
-        About
-      </a>
-      <a class="sidebar__nav-link" href="#help">
-        <img src="/images/lightbulb-logo.svg">
-        Help
+        <img src="/images/about-logo.svg" /> About
       </a>
     </nav>
     <footer class="sidebar__footer">
       <a class="sidebar__footer-links" title="Cato, the browser command launcher, Github project page link" href="https://github.com/cliffordfajardo">
-        <img src="/images/github-logo.svg">
+        <img src="/images/github-logo.svg" />
       </a>
       <a class="sidebar__footer-links" title="Cato, the browser command launcher, Author's twitter page link" href="https://twitter.com/cliffordfajard0">
-        <img src="/images/twitter-logo.svg">
+        <img src="/images/twitter-logo.svg" />
       </a>
-      <a class="sidebar__footer-links" title="Cato, the browser command launcher, Chrome extension page link" href="https://twitter.com/cliffordfajard0">
-        <img src="/images/chrome-logo.svg">
+      <a class="sidebar__footer-links" title="Cato, the browser command launcher, Chrome extension page link" href="https://chrome.google.com/webstore/detail/cato/icphdcfpompgbdikholnedfeidemgobg">
+        <img src="/images/white-chrome-icon.svg" />
       </a>
-      <a class="sidebar__footer-links" title="Cato, the browser command launcher, Firefox extension page link" href="https://twitter.com/cliffordfajard0">
-        <img src="/images/firefox-logo.svg">
-      </a>
-
+      <!-- TODO: uncomment when I publish the Firefox extensions -->
+      <!-- <a class="sidebar__footer-links" title="Cato, the browser command launcher, Firefox extension page link" href="https://twitter.com/cliffordfajard0">
+        <img src="/images/firefox-logo.svg" />
+      </a> -->
     </footer>
   </div>
 
   <main class="main-content">
-    <div id="page-appearance"></div>
-    <div id="page-plugins" class="hide"></div>
-    <div id="page-usage" class="hide content">
-      <p>You have used this app <span> 100 </span> times since you installed it.
-      <h1>Getting Started</h1>
-      <p>To start using x, you can simply hit the <kbd>command+j</kbd>  or <kbd>ctrl+j</kbd>
-      Alertnatively, you can change they keyboard shortcut by going to.............http://lifehacker.com/add-custom-keyboard-shortcuts-to-chrome-extensions-for-1595322121
-      </p>
+    <div id="page-theme"></div>
 
-
-      <h1>Search the Web</h1>
-      <h1>Find and Open Bookmarks</h1>
-      <h1>Calculate</h1>
-      <h1>Change Tabs</h1>
-      <h1>Close Tabs</h1>
-      <p>For more features, visit the <a href=""> page to view all the commands or type 'List Commands" in the application.</a></p>
-    </div>
 
     <div id="page-about" class="hide content">
-        <img src="/images/cover_photo.png" alt="" srcset="">
-        <main class="column is-two-thirds">
+      <header class="cLauncher-header">
+        <img class="cLauncher-header__banner"src="/images/cato-white-logo@2x.png" alt="Cato app logo"/>
+      </header>
+
+        <main class="column is-three-quarter">
             <h1 class="title is-3 ">What is Cato?</h1>
             <p>
               Cato is an intelligent command launcher for your web browser. It aims to increase your productivity by allowing
-              you to tell your browser what to do, not how to do it.
+              you to tell your browser what to do, not how to do it. The days of remembering keyboard shortcuts and excessive
+              mouse use are over.
             </p>
 
+            <h2 class="title is-3">Example Use</h2>
 
-            <h2 class="title is-3">Cato App Updates</h2>
-            <p>
-              Cato is free and open source software that's developed with the help lots of other great
-              citizens of the web community. If you have any suggestions, feedback or would like to contribute to the underlying code, feel
-              free contact me via the links:
-            </p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/vyjcfF8d3uA" frameborder="0" allowfullscreen></iframe>
+            <p>For more details about Cato visit this <a href="https://github.com/cliffordfajardo/cato">README page</a>.</p>
+
+
+
+            <h2>Changing this extension's shortcut keys</h2>
+            <p>By default to open Cato you can click the browser icon near your URL bar or you can use:</p>
             <ul>
-              <li>
-                <a href="https://github.com/cliffordfajardo" class="has-text-dark">Github</a>
-              </li>
-              <li>
-                <a href="https://twitter.com/cliffordfajard0" class="has-text-dark">Twitter</a>
-              </li>
+              <li>Mac: <kbd>Command ⌘</kbd> + <kbd>J</kbd></li>
+              <li>Windows and Linux: <kbd>Ctrl</kbd> + <kbd>J</kbd></li>
+              <li>Alternatively, in Google Chrome, you can go to the URL <b>chrome://extensions</b> and scroll to the bottom and click <b>Keyboard shortcuts</b></li>
             </ul>
+
+
+            <h2 class="title is-3">Future Updates</h2>
+            <p>
+              Cato is free and soon to be open source.
+              If you have any feedback or would like to contribute to the underlying code,
+              visit the source repository <a href="https://github.com/cliffordfajardo" title="Cato Github repository">here.</a>
+            </p>
+
+            <section class="author-message-container">
+              <img class="author-avatar" src="/images/clifford-headshot.jpg" alt="Clifford Fajardo profile image" style="float:left"/>
+              <p class="author-message">
+                Thanks for downloading Cato. If you found this browser extension useful, let me know by rating the extension
+                or by
+                <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fgoo.gl%2Fgc6dqZ&via=cliffordfajard0&text=Checkout%20the%20Cato%20browser%20extension."> sharing </a>
+                it with others. - Cheers 🎉
+              </p>
+            </section>
 
         </main>
 

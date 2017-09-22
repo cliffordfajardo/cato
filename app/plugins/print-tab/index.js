@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Print Tab",
   subtitle: 'Display the print menu for the current page.',
-  valid: true,
-  autocomplete: false,
   action: printTab,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

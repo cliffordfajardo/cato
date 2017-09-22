@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Toggle Fullscreen",
   subtitle: 'Turn fullscreen mode on/off for the window.',
-  valid: true,
-  autocomplete: false,
   action: toggleFullscreenMode,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

@@ -5,11 +5,9 @@ const domain = require('getdomain')
 const plugin = {
   keyword: "Sort Tabs and Merge Windows",
   subtitle: 'Move all tabs to the current window and sort them.',
-  valid: true,
-  autocomplete: false,
   action: sortAndMergeWindows,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

@@ -3,11 +3,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Amazon",
   subtitle: 'Open Amazon.',
-  valid: true,
-  autocomplete: false,
   action: openAmazon,
   icon: {
-    path: 'images/amazon-icon.png'
+    path: 'images/amazon-icon.svg'
   }
 }
 

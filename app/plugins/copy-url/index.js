@@ -1,12 +1,10 @@
 const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Copy URL",
-  subtitle: 'Copy the URL of the page.',
-  autocomplete: false,
-  valid: true,
+  subtitle: 'Copy the URL of the current page.',
   action: copyUrl,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 
@@ -20,7 +18,6 @@ async function copyUrl() {
     event.clipboardData.setData('text/plain', text)
   }, {once: true})
   document.execCommand('copy')
-  window.close()
 }
 
 module.exports = plugin

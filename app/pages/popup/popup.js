@@ -1,9 +1,9 @@
 require('../popup/popup.scss')
 const utils = require('../../util.js')
-const defaultPlugins = require('../../plugins/plugins.js')
-const appHTML = require("../../components/command-palette/command-palette.html")
 const browser = require('webextension-polyfill')
-
+const defaultSuggestions = require('../../plugins/plugins.js')
+const appHTML = require("../../components/command-palette/command-palette.html")
+const fallbackWebSearches = require( '../../plugins/fallback-web-searches/index.js')
 
 /**
  * @deacription
@@ -11,19 +11,19 @@ const browser = require('webextension-polyfill')
  * 2. Creates themeConfig object in localstorage if undefined, else use existing
  */
 async function setupLocalStorage() {
-  // await browser.storage.sync.set({appUsedCounter: []})
-  await browser.storage.sync.set({themeConfig: utils.defaultThemeConfig})
+  const {themeConfig} = await browser.storage.sync.get('themeConfig')
+  if(themeConfig === undefined) {
+    await browser.storage.sync.set({themeConfig: utils.defaultThemeConfig})
+  }
+  // await browser.storage.sync.clear()
 
-  // const ls = await browser.storage.get('themeConf')
-  await browser.storage.sync.clear()
-  // await browser.storage.sync.set({themeConfig: {}})
 }
 setupLocalStorage()
 
 
 /**
  * @description
- * Sets the colors for our app from our defaultThemeConfig stored in localStorage.
+ * Sets the colors for our app (inside popup window) from our defaultThemeConfig stored in localStorage.
  * We iterate over each key in our defaultThemeConfig, which corresponds to a
  * global CSS variable in our app, and assign the value from our defaultThemeConfig
  * to our global CSS variables.
@@ -42,14 +42,18 @@ async function setupAppTheme() {
 setupAppTheme()
 
 /**
- * ['find bookmark ']
+ * @description
+ * Saves the search scopes for some our plugins. For some of our actions like 'Find Bookmark',
+ * we prepend the search scope for the action to our input and allow the user
+ * to type his/her query after the search scope name. Ex 'Find Bookmark 101 ways to cook'.
+ *
+ * ['Find Bookmark ', 'Change Tab']
  */
 const searchScopes = []
 
-defaultPlugins.forEach((plugin) => {
-  searchScopes.push()
-  if(plugin.hasSearchScope) {
-    searchScopes.push(`${plugin.keyword.toLowerCase()}`)
+defaultSuggestions.forEach((plugin) => {
+  if(plugin.searchScope !== undefined) {
+    searchScopes.push(plugin.searchScope.toLowerCase())
   }
 })
 
@@ -57,38 +61,39 @@ defaultPlugins.forEach((plugin) => {
 window.appElement = document.createElement("div")
 window.appElement.innerHTML = appHTML
 document.body.appendChild(window.appElement)
-window.currentSearchSuggestions = defaultPlugins
-window.searchInput = document.querySelector(".cPalette__search")
+window.defaultSuggestions = [...defaultSuggestions];
+window.currentSearchSuggestions = [...defaultSuggestions]
+window.searchInput = document.querySelector(".cLauncher__search")
 window.userQuery = ''
-window.searchResultsList = document.querySelector(".cPalette__search-results")
-window.searchInput.focus()
-
+window.searchResultsList = document.querySelector(".cLauncher__suggestions")
 
 function rerenderSuggestions(event) {
-  utils.clearSearchResults()
+  window.searchResultsList.innerHTML = ""
   if(window.searchInput.value === '') {
-    window.currentSearchSuggestions = defaultPlugins
+    window.currentSearchSuggestions = [...defaultSuggestions]
+    window.searchResultsList.innerHTML = ""
   }
 
-  const userQuery = window.searchInput.value.toLowerCase()
+
   let domain = searchScopes.filter((searchScope) => {
-    if (userQuery.includes(searchScope)) {
+    if (window.searchInput.value.toLowerCase().includes(searchScope)) {
       return searchScope
     }
   })[0]
 
 
 
-  //if we have "Find Bookmark apple" in the search input,
-  //only pass everything after for searching.
+  //if we have "Find Bookmark apple" in the search input only pass everything after for searching.
   if (domain) {
     //userQuery = 'find bookmark async'
     //trimedQuery for matches = 'async'
 
-    //find the plugin to executer based off the domain.
-    let x = defaultPlugins.filter((plugin) => {
+    //find the plugin to execute based off the domain.
+    let x = defaultSuggestions.filter((plugin) => {
       let regex = new RegExp(domain, 'i')
-      return plugin.keyword.match(regex)
+      if(plugin.searchScope != undefined){
+        return plugin.searchScope.match(regex)
+      }
     })
 
     let regex = new RegExp(`${domain  } `, 'i')
@@ -98,45 +103,26 @@ function rerenderSuggestions(event) {
     const matches = utils.getMatches(query, window.currentSearchSuggestions)
     utils.renderSuggestions(matches)
   }
- else {
+
+  else {
     let matches = utils.getMatches(window.searchInput.value, window.currentSearchSuggestions)
 
-    if (matches.length === 0) {
-      matches = utils.getFallbackSuggestions(window.searchInput.value)
+    if(matches.length > 0) {
+      utils.renderSuggestions(matches)
     }
-    utils.renderSuggestions(matches)
+
+    else if(utils.displayPotentialMathResult(window.searchInput.value).length > 0){
+      utils.renderSuggestions(utils.displayPotentialMathResult(window.searchInput.value))
+    }
+
+    else if (matches.length === 0 && window.searchInput.value !== '') {
+      const results = fallbackWebSearches.map((webSearch) => webSearch(window.searchInput.value))
+      utils.renderSuggestions(results)
+    }
   }
-
-
-
+  window.suggestionElements = document.querySelectorAll('.cLauncher__suggestion')
 }
 window.searchInput.addEventListener("input", rerenderSuggestions)
-
-
-/**
- * Deselect any current suggestions, selects a given suggestions.
- * and then scrolls to show selection.
- * @param {HTMLelement} nextSuggestion
- * @returns {void}
- */
-function selectSuggestion(nextSuggestion) {
-  window.selectedElement.classList.remove('selected')
-  nextSuggestion.classList.add('selected')
-  window.selectedElement = nextSuggestion
-
-}
-
-/**
- * Rescrolls element
- * @returns {void}
- */
-function reScroll() {
-    try {
-      const scrollElement = window.selectedElement.previousSibling.previousSibling
-      scrollElement.scrollIntoView(alignToTop = true)
-    }
-    catch(err) {}
-}
 
 
 /**
@@ -150,55 +136,67 @@ function handleArrowKeysOnInput(event) {
   window.selectedElement = document.querySelector('.selected')
 
   if(window.selectedElement) {
-    // event.preventDefault();
+    const key = {DOWN: event.keyCode === 40, TAB: event.keyCode === 9, UP: event.keyCode === 38, ENTER: event.keyCode === 13}
+    if(!window.selectedElement) return;
 
-
-    if(event.keyCode === 40 || event.keyCode === 9 /* Down arrow OR Tab keyodes */) {
-      const newSuggestion = window.selectedElement.nextElementSibling
-      if(newSuggestion) {
-        selectSuggestion(newSuggestion)
-        reScroll()
-      }
-      else {
-        // we've hit the bottom of the list so go all the way back up.
-        const newSuggestion = window.searchResultsList.children[0]
-        selectSuggestion(newSuggestion)
-        reScroll()
+    if(key.DOWN || key.TAB) {
+      if (selectedElement.nextElementSibling !== null) {
+        selectedElement.classList.remove('selected')
+        selectedElement = selectedElement.nextElementSibling
+        selectedElement.classList.add('selected')
+        selectedElement.scrollIntoView(alignToTop = false)
+      } else {
+        //we've reached the end of the list, select the top element
+        selectedElement.classList.remove('selected')
+        selectedElement = window.suggestionElements[0]
+        selectedElement.classList.add('selected')
+        selectedElement.scrollIntoView(alignToTop = true)
       }
     }
-    else if(event.keyCode === 38 /* Arrow Up */) {
-      event.preventDefault()
-      const newSuggestion = window.selectedElement.previousSibling
-      if(newSuggestion) {
-        selectSuggestion(newSuggestion)
-        reScroll()
+    else if(key.UP) {
+      if (selectedElement.previousElementSibling !== null) {
+        selectedElement.classList.remove('selected')
+        selectedElement = selectedElement.previousElementSibling
+        selectedElement.classList.add('selected')
+        if(isVisibleY(selectedElement) === false) {
+          selectedElement.scrollIntoView(alignToTop = true)
+        }
+      } else {
+        //we've reached the top of the list
+        selectedElement.classList.remove('selected')
+        selectedElement = window.suggestionElements[window.suggestionElements.length - 1]
+        selectedElement.classList.add('selected')
+        selectedElement.scrollIntoView(alignToTop = false)
       }
     }
-    else if(event.keyCode === 13 /* Enter key*/) {
+    else if(key.ENTER) {
       window.selectedElement.click()
     }
-    else if(event.which === 8) {
-      // Backspace Key
-      if(window.searchInput.value === '') {
-        // if the user
-      }
+    /**
+     * Check if an element is visible inside of it's parent container
+     * @param  {HTMLelement}  element
+     * @return {Boolean}
+     */
+    function isVisibleY(element) {
+      const elementRect = element.getBoundingClientRect()
+      const parentElementRect = element.parentElement.getBoundingClientRect()
+      if(elementRect.top <= parentElementRect.bottom === false) return false;
+      //check if the element is out of view due to a container scrolling.
+      if( (elementRect.top + elementRect.height) <= parentElementRect.top ) return false;
+      return elementRect.top <= document.documentElement.clientHeight
     }
-    // display preview if it has an
-      if(window.selectedElement.preview) {
-        window.searchResultPreview.innerHTML = window.selectedElement.preview
-      }
-
   }
 }
 
-window.searchInput.addEventListener("keydown", handleArrowKeysOnInput) //why does this work?
+window.searchInput.addEventListener("keydown", handleArrowKeysOnInput)
 
 
-window.onload = function onload() {
-  chrome.storage.sync.get('appUsedCounter', (value) => {
-    let counter = value
-    console.log('counter----------------', value)
-    // counter.push({date: new Date()})
-
-  })
-}
+browser.commands.onCommand.addListener(function(command) {
+  if (command == "toggle-feature") {
+    console.log("toggling the feature!");
+    setTimeout(() => {
+      document.focus()
+      window.searchInput.focus()
+    },1000)
+  }
+});

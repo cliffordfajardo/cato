@@ -4,24 +4,13 @@
 @import "../../components/static-command-palette/static-command-palette.scss";
 @import "../../components/theme-customizer/theme-customizer.scss";
 
-/*START:  Set up box-sizing for content*/
-html {
-  box-sizing: border-box;
-}
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-/*END:  Set up box-sizing for content*/
-
-html, body {
-  height: 100vh;
-}
-
 body {
   margin-left: 200px;
-
 }
-.hide {display: none !important;}
+
+.hide {
+  display: none !important;
+}
 
 .sidebar {
   background: #222222;
@@ -38,23 +27,21 @@ body {
     color: white;
     padding-left: 16px;
   }
+
   &__nav {
     margin-top: 30px;
     display: flex;
     flex-direction: column;
+
     &-link {
       text-decoration: none;
-      color: white;
+      color: white !important;
       padding: 16px;
       font-size: 16px;
 
-      &:hover,
-      &.is-active{
-        background: white;
-        color: #222222;
-        img {
-          background: #222;
-        }
+      &.is-active,
+      &:hover {
+        border-left: 4px solid white;
       }
 
       img {
@@ -70,6 +57,7 @@ body {
     bottom: 15px;
     left: 16px;
     right: 16px;
+
     &-links {
       margin: 0 10px 0 0;
 
@@ -78,41 +66,48 @@ body {
       }
     }
   }
-
 }
 
 .main-content {
   margin-top: 25px;
   margin-left: 80px;
   margin-right: 80px;
+  min-width: 500px;
+}
 
-  #page-appearance {
-    display: flex;
+#page-theme {
+  display: flex;
+}
+
+#page-about {
+  .cLauncher-header {
+    background: #222222;
+
+    &__banner {
+      max-height: 200px;
+      display: block;
+      margin: 0 auto;
+    }
   }
 }
 
-
-#save-theme-settings {
+#reset-theme {
   background: hotpink;
   color: white;
 }
-#reset-theme-settings {
-  background: #fff;
-}
 
+.author-message-container {
+  margin-top: 60px;
+  max-width: 400px;
 
+  .author-avatar {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
 
-
-.usage-container {
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.usage-line {
-  font-size: 25px;
-}
-.usage-count {
-  font-size: 30px;
-  text-decoration: underline;
+  .author-message {
+    padding-top: 10px;
+    margin-left: 10px;
+    font-size: 14px;
+  }
 }

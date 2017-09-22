@@ -5,12 +5,11 @@ const sortBy = require('lodash.sortby')
 const plugin = {
   keyword: 'Disable Extension',
   subtitle: 'Disable an active chrome extension',
-  autocomplete: true,
   valid: false,
-  hasSearchScope: true,
+  searchScope: 'Disable Extension',
   action: displayActiveExtensions,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 
@@ -19,14 +18,14 @@ const plugin = {
 async function displayActiveExtensions() {
   window.currentSearchSuggestions = []
 
-  if (!plugin.valid && plugin.autocomplete) {
-    window.searchInput.value = `${plugin.keyword} `
+  if (!plugin.valid) {
+    window.searchInput.value = `${plugin.searchScope} `
     window.searchResultsList.innerHTML = ""
 
     const extensionsAndApps = await browser.management.getAll()
     let extensions = extensionsAndApps.filter((extensionOrApp) => {
       return extensionOrApp.type === 'extension' &&
-        extensionOrApp.name !== "Awesome Task Launcher" &&
+        extensionOrApp.name !== "Cato" &&
         extensionOrApp.enabled
     })
 
@@ -51,7 +50,7 @@ async function displayActiveExtensions() {
       const noInactiveExtensionMessage = {
         keyword: 'No Other Active Extensions Found.',
         icon: {
-          path: 'images/chrome-icon.png'
+          path: 'images/chrome-icon.svg'
         }
       }
       window.currentSearchSuggestions.push(noInactiveExtensionMessage)
@@ -59,6 +58,7 @@ async function displayActiveExtensions() {
     }
     else {
       utils.renderSuggestions(window.currentSearchSuggestions)
+      window.suggestionElements = document.querySelectorAll('.cLauncher__suggestion')
     }
 
   }

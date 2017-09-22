@@ -1,12 +1,13 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const WriteFilePlugin = require('write-file-webpack-plugin')
-const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin')
 const webpack = require('webpack')
-
-const isProduction = process.env.NODE_ENV === "production"
-
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default
+const cssNano = require('cssnano')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const isProduction = process.env.NODE_ENV === 'production'
 
 const config = {
   entry: {
@@ -14,7 +15,7 @@ const config = {
     options: './app/pages/options/options.js'
   },
   output: {
-    path: path.resolve(__dirname, './chrome-extension/'),
+    path: path.resolve(__dirname, './extension'),
     filename: '[name].js'
   },
   module: {
@@ -33,11 +34,9 @@ const config = {
         use: ['babel-loader']
       },
       {
-      //allows us to import our css. But, we need style loader so the css created in our js bundle is added to a <style> tag in our html doc
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          //resolve-url-loader may be chained before sass-loader if necessary
           use: ['css-loader', 'sass-loader']
         })
       },
@@ -50,50 +49,55 @@ const config = {
     ]
   },
   plugins: [
-    new webpack.NamedModulesPlugin(),
-    //enable hot module
-    new webpack.HotModuleReplacementPlugin(),
-
-    /*
-    webpack-dev-server serves content, watches for changes & serves the changes
-    from memory without writing changes to the file system. Usually, you'd need to
-    run webpack --watch and run webpack-dev-server on a seperate tab,but this
-    plugin solves that problem.
-    */
-    new WriteFilePlugin({
-      //dont include hot files.
-      test: /^(?!.*(hot)).*/
-    }),
-
-    //This plugin will generate an HTML5 file for you that includes all your webpack bundles in the body using script tags
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    //Generate an HTML5 file that includes all webpack bundles(includes css & js) in the body using script tags
     new HtmlWebpackPlugin({
-      title: 'My App',
+      title: 'Cato - App',
       template: './app/pages/popup/popup.html',
       filename: 'popup.html',
-      excludeChunks: ['options']
+      chunks: ['popup']
     }),
     new HtmlWebpackPlugin({
-      title: 'My App - Options',
+      title: 'Cato - Options',
       template: './app/pages/options/options.html',
       filename: 'options.html',
-      excludeChunks: ['popup']
+      chunks: ['options']
     }),
-
-    /*Create bundle.css & output it to the `dist` folder.
-     File destination is determined by the output property above
-     */
+    //Create our CSS bundles by our entry points names (Ex: popup.css, options.css)
     new ExtractTextPlugin({
       filename: '[name].css'
+    }),
+    new CopyWebpackPlugin([
+      {from: 'app/images', to: 'images'},
+      {from: 'app/manifest.json'}
+    ]),
+    new ImageminPlugin({test: /\.(jpe?g|png|gif|svg)$/i})
+  ]
+}
+
+if(isProduction) {
+  config.plugins.push(
+    new UglifyJSPlugin({
+      sourceMap: false,
+      uglifyOptions: {
+        mangle: true,
+        compress: {
+          dead_code: true,
+          drop_console: true,
+          conditionals: true,
+          booleans: true,
+          unused: true,
+          if_return: true,
+          join_vars: true
+        }
+      }
+    }),
+    new OptimizeCssAssetsPlugin({
+      assetNameRegExp: /\.css$/,
+      cssProcessor: cssNano,
+      cssProcessorOptions: {discardComments: {removeAll: true}}, canPrint: true
     })
-  ],
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 9000,
-    hot: true,
-    stats: 'errors-only',
-    open: true
-  }
+  )
 }
 
 module.exports = config

@@ -1,3 +1,6 @@
+# Project related
+extension
+
 ### node etc ###
 
 # Logs
@@ -25,14 +28,13 @@ coverage
 
 # Compiled Dirs (http://nodejs.org/api/addons.html)
 build/
-dist/
 
 # Dependency directorys
 # Deployed apps should consider commenting these lines out:
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules/
 bower_components/
-
+package-lock.json
 
 
 # Packages #
@@ -63,7 +65,3 @@ Thumbs.db
 # Text Editors
 *.vscode
 *.sublime
-
-
-chrome-extension/
-package-lock.json

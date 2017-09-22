@@ -4,7 +4,7 @@ const plugin = {
   subtitle: 'Reload the current tab.',
   action: reloadTab,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 

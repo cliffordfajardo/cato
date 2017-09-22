@@ -2,11 +2,9 @@ const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Downloads",
   subtitle: 'View your browser downloads.',
-  valid: true,
-  autocomplete: false,
   action: openDownloads,
   icon: {
-    path: 'images/chrome-icon.png'
+    path: 'images/chrome-icon.svg'
   }
 }
 
