@@ -30,14 +30,18 @@ async function shortenUrl() {
     });
 
     post.done(data => {
-        document.addEventListener('copy', (event) => {
-            event.preventDefault();
-            event.clipboardData.setData('text/plain', data.id);
-        }, { once: true })
-        document.execCommand('copy');        
+        copyToClipboard(data.id);
     }).fail(e => {
         console.log('Failed to shorten url: ', activeTabUrl);
     });
+}
+
+function copyToClipboard(value) {
+    document.addEventListener('copy', (event) => {
+        event.preventDefault();
+        event.clipboardData.setData('text/plain', value);
+    }, { once: true })
+    document.execCommand('copy');  
 }
 
 module.exports = plugin;
