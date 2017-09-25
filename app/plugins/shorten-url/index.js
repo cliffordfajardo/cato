@@ -22,7 +22,7 @@ async function shortenUrl() {
 
     document.addEventListener('copy', (event) => {
         event.preventDefault();
-        event.clipboardData.setData('text/plain', shortenUrl);
+        event.clipboardData.setData('text/plain', shortUrl);
     }, { once: true })
 
     const post = $.ajax({
@@ -37,7 +37,7 @@ async function shortenUrl() {
     });
 
     post.done(data => {
-        shortenUrl = data.id;
+        shortUrl = data.id;
         document.execCommand('copy');        
     }).fail(e => {
         console.log('Failed to shorten url: ', activeTabUrl);
