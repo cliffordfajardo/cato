@@ -212,6 +212,14 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
   return icon.url
 }
 
+utils.copyToClipboard = function copyToClipboard(value, cb) {
+  document.addEventListener('copy', (event) => {
+      event.preventDefault();
+      event.clipboardData.setData('text/plain', value);
+      cb();
+  }, { once: true })
+  document.execCommand('copy');  
+}
 
 
 module.exports = utils
