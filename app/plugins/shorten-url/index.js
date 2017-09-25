@@ -18,13 +18,6 @@ async function shortenUrl() {
     const activeTabUrl = tabs[0].url;
     const postUrl = 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyAMSEYpKsnx7pK1I-oKYX7UMC2wumDDjk8'; // Free key allows for 1,000,000 requests per day
 
-    let shortUrl = null;
-
-    document.addEventListener('copy', (event) => {
-        event.preventDefault();
-        event.clipboardData.setData('text/plain', shortUrl);
-    }, { once: true })
-
     const post = $.ajax({
         url: postUrl,
         type: 'POST',
@@ -37,7 +30,10 @@ async function shortenUrl() {
     });
 
     post.done(data => {
-        shortUrl = data.id;
+        document.addEventListener('copy', (event) => {
+            event.preventDefault();
+            event.clipboardData.setData('text/plain', data.id);
+        }, { once: true })
         document.execCommand('copy');        
     }).fail(e => {
         console.log('Failed to shorten url: ', activeTabUrl);
