@@ -1,4 +1,5 @@
 const browser = require('webextension-polyfill');
+const {copyToClipboard} = require('../../util');
 const $ = require('jquery');
 const plugin = {
     keyword: "Shorten URL",
@@ -30,18 +31,12 @@ async function shortenUrl() {
     });
 
     post.done(data => {
-        copyToClipboard(data.id);
+        copyToClipboard(data.id, () => {
+            window.close();
+        });
     }).fail(e => {
         console.log('Failed to shorten url: ', activeTabUrl);
     });
-}
-
-function copyToClipboard(value) {
-    document.addEventListener('copy', (event) => {
-        event.preventDefault();
-        event.clipboardData.setData('text/plain', value);
-    }, { once: true })
-    document.execCommand('copy');  
 }
 
 module.exports = plugin;
