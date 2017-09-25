@@ -18,7 +18,7 @@ async function shortenUrl() {
     const activeTabUrl = tabs[0].url;
     const postUrl = 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyAMSEYpKsnx7pK1I-oKYX7UMC2wumDDjk8'; // Free key allows for 1,000,000 requests per day
 
-    const shortUrl = null;
+    let shortUrl = null;
 
     document.addEventListener('copy', (event) => {
         event.preventDefault();
