@@ -29,7 +29,7 @@ async function findTab() {
       const suggestion = {
         'action': switchToTabById(tab.windowId, tab.id),
         'icon': {
-          path: tab.favIconUrl || 'images/blank-page.png'
+          path: tab.favIconUrl || 'images/blank-page-icon.svg'
         },
         'keyword': `${tab.title}`,
         subtitle: `${tab.url}`
