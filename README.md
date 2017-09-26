@@ -7,7 +7,7 @@
 
 > Cato - a browser extension that allows you to control your browser with simple commands.
 
-**Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)**🐈
+**Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)** 🐈
 
 
 ## Install
@@ -114,39 +114,10 @@ This browser extension available for:
 
 
 
-## Contribute
+## Contributing and Development
 
-We're happy to receive suggestions and contributions.
+We're happy to receive suggestions and contributions. Please take a look at [CONTRIBUTING.md](CONTRIBUTING.md) to learn more about how to submit code, report bugs and so on.
 
-
-
-## Development
-
-To run the extension locally, you'll need to build it with:
-
-```sh
-# Build once
-npm run build
-```
-
-```sh
-# Build every time a file changes
-npm run watch
-```
-
-Once built, load it in the browser.
-
-### Chrome
-
-1. Visit `chrome://extensions/` in Chrome
-2. Enable the **Developer mode**
-3. Click on **Load unpacked extension**
-4. Select the folder `extension`
-
-
-## Created by
-
-- [Clifford Fajardo](https://github.com/cliffordfajardo)
 
 
 
