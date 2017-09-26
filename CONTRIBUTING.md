@@ -31,6 +31,10 @@ array and  `popup.js` is where they are eventually used.
 **If you'd like to contribute a new command** ,  please create a new folder inside `plugins/`. Currently this project uses [async await](https://hackernoon.com/6-reasons-why-javascripts-async-await-blows-promises-away-tutorial-c7ec10518dd9) to deal with asynchronous code. When and if you can, please try and use async/await instead of callbacks and promises.
 
 
+## Installing Prerequisites
+
+You'll need git and a recent version of Node.JS (any v7.2.1+ is recommended with npm v3.10.10+). nvm is also highly recommended.
+
 ## Development
 
 To run the extension locally, you'll need to build it with:
@@ -59,7 +63,7 @@ Once built, load it in the browser.
 ## Tips
 
 Once you load the extension, invoke Cato by pressing the icon or command shortcut, you can option click
-the popup window and that will bring up the chrome developer tools for inspecting and debugging. 
+the popup window and that will bring up the chrome developer tools for inspecting and debugging.
 
 Consider using `debugger` statements in your code. They're useful when you're developing browser extensions.
 
@@ -97,3 +101,5 @@ Consider using `debugger` statements in your code. They're useful when you're de
 - Do not include issue numbers in the PR title
 - Include screenshots and animated GIFs in your pull request whenever possible.
 - End all files with a newline
+
+To enable us to quickly review and accept your pull requests, always create one pull request per issue and link the issue in the pull request. Never merge multiple requests in one unless they have the same root cause. Be sure to follow our Coding Guidelines and keep code changes as small as possible. Avoid pure formatting changes to code that has not been modified otherwise. Pull requests should contain tests whenever possible.
