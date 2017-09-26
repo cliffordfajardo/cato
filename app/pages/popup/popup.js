@@ -140,6 +140,8 @@ function handleArrowKeysOnInput(event) {
     if(!window.selectedElement) return;
 
     if(key.DOWN || key.TAB) {
+      // prevent focus on search input so we can keep tabbing down our suggestions while still being able to type
+      event.preventDefault()
       if (selectedElement.nextElementSibling !== null) {
         selectedElement.classList.remove('selected')
         selectedElement = selectedElement.nextElementSibling
