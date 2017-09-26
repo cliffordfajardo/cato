@@ -18,6 +18,7 @@ async function copyUrl() {
     event.clipboardData.setData('text/plain', text)
   }, {once: true})
   document.execCommand('copy')
+  window.close()
 }
 
 module.exports = plugin
