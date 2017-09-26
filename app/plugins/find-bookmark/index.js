@@ -35,7 +35,7 @@ function recurseTree(nodes) {
           await browser.tabs.create({url: node.url})
         },
         icon: {
-          path: `chrome://favicon/${node.url}`
+          path: `chrome://favicon/${node.url}` || 'images/blank-page-icon.svg'
         }
       }
       window.currentSearchSuggestions.push(suggestion)

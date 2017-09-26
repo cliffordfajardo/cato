@@ -12,6 +12,7 @@ function getAllSuggestions(){
   window.searchResultsList.innerHTML = ""
   utils.renderSuggestions(window.defaultSuggestions)
   window.searchInput.value = ''
+  window.suggestionElements = document.querySelectorAll('.cLauncher__suggestion')
 }
 
 module.exports = plugin

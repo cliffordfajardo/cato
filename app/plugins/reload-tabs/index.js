@@ -1,7 +1,7 @@
 const browser = require('webextension-polyfill')
 const plugin = {
   keyword: "Reload All Tabs",
-  subtitle: 'Reload the current tab.',
+  subtitle: 'Reload all tabs in the current window.',
   action: reloadAllTabs,
   icon: {
     path: 'images/chrome-icon.svg'

@@ -6,13 +6,39 @@
 [![Tweet][twitter-badge]][twitter]
 
 > Cato - a browser extension that allows you to control your browser with simple commands.
-**Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)**🐈
+
+**Discuss it on [Product Hunt](https://www.producthunt.com/posts/cato)** 🐈
 
 
 ## Install
 
-- [**Chrome** extension](https://chrome.google.com/webstore/detail/cato/icphdcfpompgbdikholnedfeidemgobg)
-- Opera - Use [this Opera extension](https://addons.opera.com/en/extensions/details/download-chrome-extension-9/) to install the Chrome version.
+This browser extension available for:
+
+<table style="max-width: 700px;">
+	<tr>
+		<th colspan="2" style="text-align:center">
+			Install
+		</th>
+	</tr>
+	<tr><!-- Prevent zebra stripes --></tr>
+	<tr>
+		<td>
+			<img src="media/chrome-icon.png" width="48px">
+		</td>
+		<td>
+			<img src="media/opera-icon.png" width="48px">
+		</td>
+	</tr>
+  <tr>
+    <td>
+      <a href="https://chrome.google.com/webstore/detail/cato/icphdcfpompgbdikholnedfeidemgobg">Chrome</a>
+    </td>
+    <td>
+      <a href="https://addons.opera.com/en/extensions/details/download-chrome-extension-9/">Opera</a>
+    </td>
+  </tr>
+</table>
+
 
 
 ## Highlights
@@ -88,39 +114,10 @@
 
 
 
-## Contribute
+## Contributing and Development
 
-We're happy to receive suggestions and contributions.
+We're happy to receive suggestions and contributions. Please take a look at [CONTRIBUTING.md](CONTRIBUTING.md) to learn more about how to submit code, report bugs and so on.
 
-
-
-## Development
-
-To run the extension locally, you'll need to build it with:
-
-```sh
-# Build once
-npm run build
-```
-
-```sh
-# Build every time a file changes
-npm run watch
-```
-
-Once built, load it in the browser.
-
-### Chrome
-
-1. Visit `chrome://extensions/` in Chrome
-2. Enable the **Developer mode**
-3. Click on **Load unpacked extension**
-4. Select the folder `extension`
-
-
-## Created by
-
-- [Clifford Fajardo](https://github.com/cliffordfajard0)
 
 
 
