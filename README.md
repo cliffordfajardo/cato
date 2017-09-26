@@ -1,4 +1,4 @@
-# <img src="media/cato-logo.png" width="40" style='margin-right: 10px;'align="left"> Cato
+# <img src="media/cato-logo.png" width="40" style='margin-right: 10px;'> Cato
 
 [![Chrome version][badge-cws]][link-cws]
 [![PRs Welcome][prs-badge]][prs]
