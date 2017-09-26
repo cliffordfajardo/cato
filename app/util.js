@@ -212,6 +212,15 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
   return icon.url
 }
 
+utils.copyToClipboard = function copyToClipboard(value, cb) {
+  document.addEventListener('copy', (event) => {
+      event.preventDefault(); // Prevents the default behavior of copying, ex: pressing Ctrl+C
+      // If we didn't prevent the prevent default, the clipboard would be filled with what ever the user had highlighted on the page.
+      event.clipboardData.setData('text/plain', value);
+      cb(event);
+  }, { once: true })
+  document.execCommand('copy');  
+}
 
 
 module.exports = utils
