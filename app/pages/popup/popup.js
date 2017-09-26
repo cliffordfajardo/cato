@@ -144,13 +144,13 @@ function handleArrowKeysOnInput(event) {
         selectedElement.classList.remove('selected')
         selectedElement = selectedElement.nextElementSibling
         selectedElement.classList.add('selected')
-        selectedElement.scrollIntoView(alignToTop = false)
+        selectedElement.scrollIntoView(false)
       } else {
         //we've reached the end of the list, select the top element
         selectedElement.classList.remove('selected')
         selectedElement = window.suggestionElements[0]
         selectedElement.classList.add('selected')
-        selectedElement.scrollIntoView(alignToTop = true)
+        selectedElement.scrollIntoView(true)
       }
     }
     else if(key.UP) {
@@ -159,14 +159,14 @@ function handleArrowKeysOnInput(event) {
         selectedElement = selectedElement.previousElementSibling
         selectedElement.classList.add('selected')
         if(isVisibleY(selectedElement) === false) {
-          selectedElement.scrollIntoView(alignToTop = true)
+          selectedElement.scrollIntoView(true)
         }
       } else {
         //we've reached the top of the list
         selectedElement.classList.remove('selected')
         selectedElement = window.suggestionElements[window.suggestionElements.length - 1]
         selectedElement.classList.add('selected')
-        selectedElement.scrollIntoView(alignToTop = false)
+        selectedElement.scrollIntoView(false)
       }
     }
     else if(key.ENTER) {
