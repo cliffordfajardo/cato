@@ -67,12 +67,9 @@ utils.displayPotentialMathResult = function(query) {
       keyword: mathResult,
       subtitle: 'Copy number to your clipboard.',
       action: function copyResult() {
-        document.addEventListener('copy', (event) => {
-          event.preventDefault()
-          event.clipboardData.setData('text/plain', mathResult)
-        }, {once: true})
-        document.execCommand('copy')
-        window.close()
+        utils.copyToClipboard(mathResult, ev => {
+          window.close();
+        });
       },
       icon: {
         path: 'images/calculator-icon.svg'
