@@ -1,14 +1,12 @@
 const browser = require('webextension-polyfill');
 const {copyToClipboard, renderSuggestions} = require('../../util');
 
-const iconUrl = 'images/shortened-url-icon.svg';
-
-module.exports = {
+const plugin = {
   keyword: "Shorten URL",
   subtitle: 'Shorten the current url.',
   action: shortenUrl,
   icon: {
-    path: iconUrl
+    path: 'images/shortened-url-icon.svg'
   }
 };
 
@@ -37,7 +35,7 @@ async function shortenUrl() {
           });
         },
         icon: {
-          path: iconUrl
+          path: plugin.icon.path
         }
       }
   } else {
@@ -46,9 +44,11 @@ async function shortenUrl() {
         action: 'The network must be down or our API limit has exceeded.',
         subtitle: 'Please try again later.',
         icon: {
-          path: iconUrl
+          path: plugin.icon.path
         }
       }
   }
   renderSuggestions([suggestion]);
 }
+
+module.exports = plugin;
