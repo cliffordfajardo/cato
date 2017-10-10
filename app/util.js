@@ -67,12 +67,9 @@ utils.displayPotentialMathResult = function(query) {
       keyword: mathResult,
       subtitle: 'Copy number to your clipboard.',
       action: function copyResult() {
-        document.addEventListener('copy', (event) => {
-          event.preventDefault()
-          event.clipboardData.setData('text/plain', mathResult)
-        }, {once: true})
-        document.execCommand('copy')
-        window.close()
+        utils.copyToClipboard(mathResult, ev => {
+          window.close();
+        });
       },
       icon: {
         path: 'images/calculator-icon.svg'
@@ -212,6 +209,14 @@ utils.useAvalableExtensionIcon = function useAvalableExtensionIcon(extension) {
   return icon.url
 }
 
-
+utils.copyToClipboard = function copyToClipboard(value, cb = function() {} ) {
+  document.addEventListener('copy', (event) => {
+      event.preventDefault(); // Prevents the default behavior of copying, ex: pressing Ctrl+C
+      // If we didn't prevent the prevent default, the clipboard would be filled with what ever the user had highlighted on the page.
+      event.clipboardData.setData('text/plain', value);
+      cb(event);
+  }, { once: true })
+  document.execCommand('copy');  
+}
 
 module.exports = utils
