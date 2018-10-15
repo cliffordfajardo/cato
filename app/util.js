@@ -188,6 +188,14 @@ utils.updateCSSVariable = (propertyName, value, element = document.documentEleme
  *Update the 'value' property on an input value on change, then updates the root css variable values on the page.
  */
 utils.handleThemeInputValueChanges = async (event) => {
+  const catoCommandName = window.selectedElement.querySelector('.cLauncher__suggestion-title').innerText; //This is not the value inside of the search input box.
+  window.selectedElement.click();
+  //https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+  ga('send',
+    'event',
+    'changeThemeInput',
+    'changeThemeInput'
+  );
   const element = event.target
   const valueSuffix = element.dataset.sizing || ''
   const cssProperty = element.dataset.cssvariable
@@ -213,11 +221,11 @@ utils.copyToClipboard = function copyToClipboard(value, cb = function() {} ) {
   document.addEventListener('copy', (event) => {
     // Prevents the default behavior of copying, ex: pressing Ctrl+C
     // If we didn't prevent the prevent default, the clipboard would be filled with what ever the user had highlighted on the page.
-    event.preventDefault(); 
+    event.preventDefault();
     event.clipboardData.setData('text/plain', value);
     cb(event);
   }, { once: true })
-  document.execCommand('copy');  
+  document.execCommand('copy');
 }
 
 module.exports = utils

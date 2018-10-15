@@ -6,7 +6,7 @@ const appHTML = require("../../components/command-palette/command-palette.html")
 const fallbackWebSearches = require( '../../plugins/fallback-web-searches/index.js')
 
 /**
- * @deacription
+ * @description
  * 1. Creates app-used counter in localstorage if undefined, else use existing
  * 2. Creates themeConfig object in localstorage if undefined, else use existing
  */
@@ -18,7 +18,7 @@ async function setupLocalStorage() {
   // await browser.storage.sync.clear()
 
 }
-setupLocalStorage()
+setupLocalStorage();
 
 
 /**
@@ -68,6 +68,8 @@ window.userQuery = ''
 window.searchResultsList = document.querySelector(".cLauncher__suggestions")
 
 function rerenderSuggestions(event) {
+  window.isWebSearch = false;
+  window.isCalculatorResult = false;
   window.searchResultsList.innerHTML = ""
   if(window.searchInput.value === '') {
     window.currentSearchSuggestions = [...defaultSuggestions]
@@ -113,6 +115,8 @@ function rerenderSuggestions(event) {
 
     else if(utils.displayPotentialMathResult(window.searchInput.value).length > 0){
       utils.renderSuggestions(utils.displayPotentialMathResult(window.searchInput.value))
+      window.isCalculatorResult = true;
+      ga('send', 'event', 'calculatorResultShowedUp', 'true')
     }
 
     else if (matches.length === 0 && window.searchInput.value !== '') {
@@ -171,8 +175,34 @@ function handleArrowKeysOnInput(event) {
         selectedElement.scrollIntoView(false)
       }
     }
-    else if(key.ENTER) {
-      window.selectedElement.click()
+    else if(key.ENTER && window.searchInput.value) {
+      window.selectedElement.click();
+      const searchInputValue = window.searchInput.value.toLowerCase();
+      const catoCommandName = window.selectedElement.querySelector('.cLauncher__suggestion-title').innerText.toLowerCase(); //This is not the value inside of the search input box.
+      const catoCommandSubtitle = window.selectedElement.querySelector('.cLauncher__suggestion-subtitle').innerText.toLowerCase();
+      const isFuzzySearchExecution = catoCommandName === searchInputValue ? 'false' : 'true';                               // testing how often a full command is typed versus using fuzzy search.
+      const isWebSearch = /^(http|https|www|search|for)/.test(catoCommandName) || /^(http|https|www|search|for)/.test(catoCommandSubtitle);
+      const isCalculatorResult = catoCommandSubtitle.includes("copy number to");
+      //https://developers.google.com/analytics/devguides/collection/analyticsjs/events
+
+      if(!isWebSearch && !isCalculatorResult) {
+        ga('send', 'event', 'executeCommand', catoCommandName);
+        ga('send', 'event', 'fuzzySearch', isFuzzySearchExecution);
+      }
+
+      if(isWebSearch) {
+        ga('send', 'event', 'webSearchCommand', 'true'); // how often do people use web searches? To readers, we don't track queries, just whether you ran a websearch command or not.
+      }
+
+      if(window.isCalculatorResult) {
+        ga('send', 'event', 'calculatorCopyCommand', 'true'); // how often do people use the calculator? I have a hypothesis that people use the calculator a lot for quick calculations but don't copy to clipboard
+      }
+
+      window.suggestionElements.forEach((result, index) => {
+        if (result.classList.contains('selected')) {
+          ga('send', 'event', 'hitPosition', index+1);
+        }
+      })
     }
     /**
      * Check if an element is visible inside of it's parent container
@@ -202,3 +232,26 @@ browser.commands.onCommand.addListener(function(command) {
     },1000)
   }
 });
+
+/**
+* Google Analytics
+* Purpose in Cato app:
+* - Used as a counter for tracking cato command usage. This does not track what you write inside the application.
+*
+* - As the app developer of this app, who is building this app in his spare time at no cost to users,
+* I'd like to know how useful this app is to users. Measuring how many times the app is launched gives me an idea how often this
+* application is being used.
+*/
+
+// // Standard Google Universal Analytics code
+(function (i, s, o, g, r, a, m) {
+i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+  (i[r].q = i[r].q || []).push(arguments)
+}, i[r].l = 1 * new Date(); a = s.createElement(o),
+  m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga'); // Note: https protocol here
+
+ga('create', 'UA-41444051-3', 'auto'); // Enter your GA identifier
+ga('set', 'checkProtocolTask', function () { }); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
+ga('require', 'displayfeatures');
+ga('send', 'pageview', '/popup.html'); // Specify the virtual path

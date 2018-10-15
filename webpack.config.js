@@ -80,15 +80,11 @@ if(isProduction) {
     new UglifyJSPlugin({
       sourceMap: false,
       uglifyOptions: {
-        mangle: true,
         compress: {
           dead_code: true,
           drop_console: true,
-          conditionals: true,
-          booleans: true,
           unused: true,
-          if_return: true,
-          join_vars: true
+          if_return: true
         }
       }
     }),

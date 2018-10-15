@@ -61,18 +61,6 @@ This browser extension available for:
 </table>
 
 <table style="max-width: 700px;">
-	<tr><!-- Prevent zebra stripes --></tr>
-  <tr>
-		<td>
-			<img src="media/example-change-tab.png">
-		</td>
-		<td>
-			<img src="media/example-disable-extension.png">
-		</td>
-	</tr>
-</table>
-
-<table style="max-width: 700px;">
 	<tr>
 		<th colspan="2" style="text-align:center">
 			Fallback Searches and Calculator
@@ -108,9 +96,7 @@ This browser extension available for:
 - By default to open Cato you can click the browser icon near your URL bar or you can use:
   - Mac: <kbd>Command ⌘</kbd> + <kbd>J</kbd>
   - Windows and Linux: <kbd>Ctrl</kbd> + <kbd>J</kbd>
-- Alternatively, in Google Chrome, you can go to the URL `chrome://extensions` and scroll to the bottom and click **Keyboard shortcuts**
-
-<img src="media/change-shortcut-how-to.png" width="400px"/>
+- Alternatively, in Google Chrome, you can go to the URL `chrome://extensions/shortcuts` and scroll to the bottom and click **Keyboard shortcuts**
 
 
 
