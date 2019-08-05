@@ -131,3 +131,10 @@ Now, with Cato, I can get nearly the same command-driven experiences that apps l
 
 [twitter]: https://twitter.com/intent/tweet?url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fcato%2Ficphdcfpompgbdikholnedfeidemgobg&via=cliffordfajard0&text=Checkout%20the%20command%20launcher%20browser%20extension%20-%20Cato%21
 [twitter-badge]: https://img.shields.io/twitter/url/https/github.com/kentcdodds/cross-env.svg?style=social
+
+
+
+### Thank You
+> Thanks checking out my extension! I'm mostly hang out on [twitter](https://twitter.com/cliffordfajard0), ask me questions or let's talk!
+
+<a href="https://twitter.com/cliffordfajard0"><img src="https://img.shields.io/twitter/follow/cliffordfajard0?style=social" alt="Twitter Profile Badge"/></a>
